@@ -60,7 +60,7 @@ HEX_PRE:
   db "0x", 0
 
 print_digit:
-	pusha
+  pusha
   cmp cl, 9
   jg is_alpha
   mov al, cl
@@ -73,7 +73,7 @@ print:
   mov ah, 0x0e
   int 0x10
   popa
-	ret
+  ret
 
 ;print_digit:
 ;  pusha

@@ -30,28 +30,28 @@ jmp $
 
 ; load_kernel
 load_kernel:
-	mov bx, MSG_LOAD_KERNEL ; Say we're loading the kernel now
-	call print_string
+  mov bx, MSG_LOAD_KERNEL ; Say we're loading the kernel now
+  call print_string
   call print_newline
-	mov bx, KERNEL_OFFSET   ; Read into KERNEL_OFFSET
+  mov bx, KERNEL_OFFSET   ; Read into KERNEL_OFFSET
   ; Next line we load just enough sectors because qemu doesn't
   ; seem to let us read more than what exists in the bootable
   ; disk image we provide it. I guess that makes sense but we
   ; need to keep this in mind. If our kernel code ever exceeds this
   ; we need to change it to read more sectors otherwise we wont load
   ; the kernel fully.
-	mov dh, 3               ; 3 sectors
-	mov dl, [BOOT_DRIVE]    ; From our boot drive
-	call disk_read
-	ret
+  mov dh, 3               ; 3 sectors
+  mov dl, [BOOT_DRIVE]    ; From our boot drive
+  call disk_read
+  ret
 
 [bits 32]
 ; This is where we start after entering protected mode
 BEGIN_PM:
-	mov ebx, MSG_PROTECT_MODE ; Say hit from 32-bit protected mode
+  mov ebx, MSG_PROTECT_MODE ; Say hit from 32-bit protected mode
   call print_string_pm
-	call KERNEL_OFFSET        ; Run our kernel!
-	jmp $
+  call KERNEL_OFFSET        ; Run our kernel!
+  jmp $
 
 ; Global variables
 BOOT_DRIVE       db 0
