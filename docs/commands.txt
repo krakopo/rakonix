@@ -1,0 +1,20 @@
+Generate binary file from assembly:
+nasm -f bin -o boot_hello_call.bin boot_hello_call.asm
+
+Running QEMU:
+qemu-system-i386 -drive format=raw,file=boot_hello_call.bin
+
+Generating 32-bit object files from C source code:
+gcc -fno-pic -ffreestanding -m32 -c func.c -o func.o
+
+Disassemble object file with Intel style assembly:
+objdump -d -M intel func.o
+
+Generating object file from assembly:
+nasm -f elf kernel_entry.asm -o kernel_entry.o
+
+Linking for kernel:
+ld -o kernel.bin --oformat binary -m elf_i386 -Ttext 0x1000 kernel_entry.o kernel.o
+
+Create bootable kernel image:
+cat boot_kernel.bin kernel.bin > os-image
