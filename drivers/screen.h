@@ -13,7 +13,7 @@
  *  Magenta        0x5
  *  Brown          0x6
  *  Light Gray     0x7
- *  Dar Gray       0x8
+ *  Dark Gray      0x8
  *  Light Blue     0x9
  *  Light Green    0xA
  *  Light Cyan     0xB
@@ -24,7 +24,6 @@
  *
  * Use high bits for background and low bits for text colour.
  */
-
 #define WHITE_ON_BLACK 0x0F
 #define YELLOW_ON_BLACK 0x0E
 
