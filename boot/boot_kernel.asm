@@ -34,13 +34,13 @@ load_kernel:
 	call print_string
   call print_newline
 	mov bx, KERNEL_OFFSET   ; Read into KERNEL_OFFSET
-  ; Next line we load just a single sector because qemu doesn't
+  ; Next line we load just enough sectors because qemu doesn't
   ; seem to let us read more than what exists in the bootable
   ; disk image we provide it. I guess that makes sense but we
-  ; need to keep this in mind if our kernel code ever exceeds a single
-  ; sector. If it does we need to change this to read more sectors
-  ; otherwise we wont load the kernel fully.
-	mov dh, 1               ; 1 sector
+  ; need to keep this in mind. If our kernel code ever exceeds this
+  ; we need to change it to read more sectors otherwise we wont load
+  ; the kernel fully.
+	mov dh, 3               ; 3 sectors
 	mov dl, [BOOT_DRIVE]    ; From our boot drive
 	call disk_read
 	ret
