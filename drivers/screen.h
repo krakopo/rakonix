@@ -1,8 +1,32 @@
 #define VIDEO_ADDRESS 0xb8000
 #define MAX_ROWS 25
 #define MAX_COLS 80
-#define WHITE_ON_BLACK 0x0f
-#define YELLOW_ON_BLACK 0x0e
+
+/*
+ * BIOS colour attribute codes:
+ *
+ *  Black          0x0
+ *  Blue           0x1
+ *  Green          0x2
+ *  Cyan           0x3
+ *  Red            0x4
+ *  Magenta        0x5
+ *  Brown          0x6
+ *  Light Gray     0x7
+ *  Dar Gray       0x8
+ *  Light Blue     0x9
+ *  Light Green    0xA
+ *  Light Cyan     0xB
+ *  Light Red      0xC
+ *  Light Magenta  0xD
+ *  Yellow         0xE
+ *  White          0xF
+ *
+ * Use high bits for background and low bits for text colour.
+ */
+
+#define WHITE_ON_BLACK 0x0F
+#define YELLOW_ON_BLACK 0x0E
 
 // Screen I/O ports
 #define REG_SCREEN_CTRL 0x3D4
