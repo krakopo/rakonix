@@ -1,0 +1,16 @@
+Mapping instruction pointer (EIP) to assembly:
+
+  Suppose we get an interrupt for divide by zero with EIP = 0x11DE.
+  We defined our kernel code to start at 0x1000 so this would be at
+  offset 0x1DE (EIP - 0x1000) in the kernel.bin file:
+
+  ndisasm -b 32 kernel/kernel.bin | grep 000001DE -B 3
+
+  000001D3  B80A000000        mov eax,0xa
+  000001D8  B900000000        mov ecx,0x0
+  000001DD  99                cdq
+  000001DE  F7F9              idiv ecx
+
+  Here we can see 0x1DE is in fact a divide by zero. So by mapping
+  back to the assembly listing we can confirm our ISR is preserving EIP.
+
