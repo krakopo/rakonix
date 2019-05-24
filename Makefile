@@ -20,10 +20,11 @@ run: os-image
 	qemu-system-i386 -drive format=raw,file=$<
 
 os-image: boot/boot_kernel.bin kernel/kernel.bin
+	sh load_kernel_size_check.sh
 	cat $^ > $@
 
 kernel/kernel.bin: kernel/kernel_entry.o ${OBJ_FILES}
-	ld -o $@ -Ttext 0x1000 $^ --oformat binary -m elf_i386
+	ld -o $@ -Ttext 0x1000 --entry 0x1000 --oformat binary -m elf_i386 $^
 
 %.o: %.c ${C_HEADERS}
 	gcc -m32 -fno-pic -ffreestanding -c $< -o $@ -I .
