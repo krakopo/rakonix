@@ -143,7 +143,7 @@ void idt_default_handler(struct isr_params *isrp)
   }
   else
   {
-    print("\nUhandled Interrupt Number: ");
+    print("\nUnhandled Interrupt Number: ");
     print_hex(isrp->int_no);
   }
 }
