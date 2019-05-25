@@ -11,19 +11,19 @@
 ; Interrupt 0: Divide By Zero Exception
 global isr0
 isr0:
-    cli
-    push byte 0    ; A normal ISR stub that pops a dummy error code to keep a
-                   ; uniform stack frame
-    push byte 0
-    jmp isr_common_stub
+  cli
+  push byte 0    ; A normal ISR stub that pops a dummy error code to keep a
+                 ; uniform stack frame
+  push byte 0
+  jmp isr_common_stub
 
 ; Interrupt 1: Debug Exception
 global isr1
 isr1:
-    cli
-    push byte 0
-    push byte 1
-    jmp isr_common_stub
+  cli
+  push byte 0
+  push byte 1
+  jmp isr_common_stub
 
 global isr2
 isr2:
@@ -46,11 +46,11 @@ isr7:
 ; Interrupt 8: Double Fault Exception (with error code!)
 global isr8
 isr8:
-    cli
-    push byte 8    ; Note that we DON'T push a value on the stack in this one!
-                   ; It pushes one already! Use this type of stub for exceptions
-                   ; that pop error codes!
-    jmp isr_common_stub
+  cli
+  push byte 8    ; Note that we DON'T push a value on the stack in this one!
+                 ; It pushes one already! Use this type of stub for exceptions
+                 ; that pop error codes!
+  jmp isr_common_stub
 
 global isr9
 isr9:
@@ -120,6 +120,63 @@ isr30:
 
 global isr31
 isr31:
+
+; The first 32 entries in the IDT are for interrupts raised by the processor.
+; The next 16 entries are for interrupts raised by hardware devices like a
+; keyboard or network card.
+
+global irq0
+irq0:
+  cli
+  push byte 0    ; IRQs don't push an error code so use a dummy error
+                 ; code to keep things consistent with ISRs
+  push byte 32
+  jmp isr_common_stub
+
+global irq1
+irq1:
+
+global irq2
+irq2:
+
+global irq3
+irq3:
+
+global irq4
+irq4:
+
+global irq5
+irq5:
+
+global irq6
+irq6:
+
+global irq7
+irq7:
+
+global irq8
+irq8:
+
+global irq9
+irq9:
+
+global irq10
+irq10:
+
+global irq11
+irq11:
+
+global irq12
+irq12:
+
+global irq13
+irq13:
+
+global irq14
+irq14:
+
+global irq15
+irq15:
 
 ; We call a C function in here. We need to let the assembler know
 ; that 'idt_default_handler' exists in another file

@@ -134,12 +134,17 @@ void idt_default_handler(struct isr_params *isrp)
   if (isrp->int_no < 32)
   {
     set_text_colour(BLACK, LIGHT_RED);
-    print("\nUnhandled Interrupt @ EIP = ");
+    print("\nUnhandled Exception @ EIP = ");
     print_hex(isrp->eip);
     print(": ");
     print(exception_messages[isrp->int_no]);
     print("\n");
     for(;;);
+  }
+  else
+  {
+    print("\nUhandled Interrupt Number: ");
+    print_hex(isrp->int_no);
   }
 }
 
@@ -177,6 +182,48 @@ extern void isr29();
 extern void isr30();
 extern void isr31();
 
+/* All our assembly IRQ entry points */
+extern void irq0();
+extern void irq1();
+extern void irq2();
+extern void irq3();
+extern void irq4();
+extern void irq5();
+extern void irq6();
+extern void irq7();
+extern void irq8();
+extern void irq9();
+extern void irq10();
+extern void irq11();
+extern void irq12();
+extern void irq13();
+extern void irq14();
+extern void irq15();
+
+
+/*
+ * Normally, IRQs 0 to 7 are mapped to entries 8 to 15.
+ * This is a problem in protected mode, because IDT entry 8 is a
+ * Double Fault! Without remapping, every time IRQ0 fires, you get
+ * a Double Fault Exception, which is not actually what's happening.
+ * So here we send commands to the Programmable Interrupt Controller
+ * (PICs - also called the 8259's) in order to make IRQ0 to 15 be
+ * remapped to IDT entries 32 to 47.
+ */
+void irq_remap()
+{
+  port_byte_out(0x20, 0x11);
+  port_byte_out(0xA0, 0x11);
+  port_byte_out(0x21, 0x20);
+  port_byte_out(0xA1, 0x28);
+  port_byte_out(0x21, 0x04);
+  port_byte_out(0xA1, 0x02);
+  port_byte_out(0x21, 0x01);
+  port_byte_out(0xA1, 0x01);
+  port_byte_out(0x21, 0x0);
+  port_byte_out(0xA1, 0x0);
+}
+
 /* Finally, the function to install the IDT */
 void idt_install()
 {
@@ -186,6 +233,9 @@ void idt_install()
 
   /* Clear out the IDT, initializing to zeros */
   memset((unsigned char *) idt, 0, sizeof(struct idt_entry) * NUM_IDT_ENTRIES);
+
+  /* Remap interrupt numbers for our PICs */
+  irq_remap();
 
   /* Set ISRs for the IDT entries */
   idt_set_handler( 0, (uint32_t)  isr0, 0x8, 0x8e);
@@ -220,6 +270,22 @@ void idt_install()
   idt_set_handler(29, (uint32_t) isr29, 0x8, 0x8e);
   idt_set_handler(30, (uint32_t) isr30, 0x8, 0x8e);
   idt_set_handler(31, (uint32_t) isr31, 0x8, 0x8e);
+  idt_set_handler(32, (uint32_t)  irq0, 0x8, 0x8e);
+  idt_set_handler(33, (uint32_t)  irq1, 0x8, 0x8e);
+  idt_set_handler(34, (uint32_t)  irq2, 0x8, 0x8e);
+  idt_set_handler(35, (uint32_t)  irq3, 0x8, 0x8e);
+  idt_set_handler(36, (uint32_t)  irq4, 0x8, 0x8e);
+  idt_set_handler(37, (uint32_t)  irq5, 0x8, 0x8e);
+  idt_set_handler(38, (uint32_t)  irq6, 0x8, 0x8e);
+  idt_set_handler(39, (uint32_t)  irq7, 0x8, 0x8e);
+  idt_set_handler(40, (uint32_t)  irq8, 0x8, 0x8e);
+  idt_set_handler(41, (uint32_t)  irq9, 0x8, 0x8e);
+  idt_set_handler(42, (uint32_t) irq10, 0x8, 0x8e);
+  idt_set_handler(43, (uint32_t) irq11, 0x8, 0x8e);
+  idt_set_handler(44, (uint32_t) irq12, 0x8, 0x8e);
+  idt_set_handler(45, (uint32_t) irq13, 0x8, 0x8e);
+  idt_set_handler(46, (uint32_t) irq14, 0x8, 0x8e);
+  idt_set_handler(47, (uint32_t) irq15, 0x8, 0x8e);
 
   /* Call the assembly routine to load the IDT we have prepared */
   idt_load();

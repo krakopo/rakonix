@@ -12,4 +12,7 @@ void main()
 
   /* Start handling interrupts */
   idt_install();
+
+  /* Enable interrupts using the STI (Set Interrupt Flag) instruction */
+  __asm__ __volatile__ ("sti");
 }
