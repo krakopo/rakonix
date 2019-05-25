@@ -1,8 +1,12 @@
 #include "kernel/low_level.h"
 #include "screen.h"
 
+// Attribute byte for the text we print.
+// Controls the background and foreground colour.
+unsigned int attribute_byte = 0;
+
 // Print a character on the screen at col, row or at cursor position
-void print_char(char character, int col, int row, char attribute_byte)
+void print_char(char character, int col, int row)
 {
   unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS;
   int offset = 0;
@@ -10,7 +14,7 @@ void print_char(char character, int col, int row, char attribute_byte)
   // If we didn't get a valid attribute byte then use the default.
   if (!attribute_byte)
   {
-    attribute_byte = WHITE_ON_BLACK;
+    reset_text_colour();
   }
 
   // If we got a valid position on screen use that otherwise use
@@ -107,13 +111,13 @@ int handle_scrolling(int offset)
 }
 
 // Print a string at a given column and row
-void print_at(char *message, int col, int row, char attribute_byte)
+void print_at(char *message, int col, int row)
 {
   char *character = message;
 
   while (*character != '\0')
   {
-    print_char(*character, col, row, attribute_byte);
+    print_char(*character, col, row);
     character++;
   }
 }
@@ -121,14 +125,7 @@ void print_at(char *message, int col, int row, char attribute_byte)
 // Print a string at the current cursor location with default attributes
 void print(char *message)
 {
-  print_at(message, -1, -1, WHITE_ON_BLACK);
-}
-
-// Print a string at the current cursor location with the specified
-// attributes.
-void print_with_attr(char *message, char attribute_byte)
-{
-  print_at(message, -1, -1, attribute_byte);
+  print_at(message, -1, -1);
 }
 
 // Clear the screen and set cursor to the top left
@@ -141,9 +138,21 @@ void clear_screen()
   {
     for (col = 0; col < MAX_COLS; col++)
     {
-      print_char(' ', col, row, WHITE_ON_BLACK);
+      print_char(' ', col, row);
     }
   }
 
   set_cursor(get_screen_offset(0,0));
+}
+
+// Set the attribute byte to the desired background and foreground colour
+void set_text_colour(unsigned short bgcolour, unsigned short fgcolour)
+{
+  attribute_byte = (bgcolour << 4) | (fgcolour & 0x0F);
+}
+
+// Set the attribute byte to the default background and foreground colour
+void reset_text_colour()
+{
+  set_text_colour(BLACK, WHITE);
 }

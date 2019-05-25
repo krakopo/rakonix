@@ -133,7 +133,8 @@ void idt_default_handler(struct isr_params *isrp)
 {
   if (isrp->int_no < 32)
   {
-    print("\nUnhandled interrupt @ EIP = ");
+    set_text_colour(BLACK, LIGHT_RED);
+    print("\nUnhandled Interrupt @ EIP = ");
     print_hex(isrp->eip);
     print(": ");
     print(exception_messages[isrp->int_no]);

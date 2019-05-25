@@ -6,7 +6,9 @@ void idt_install();
 void main()
 {
   /* Print welcome banner */
-  print_with_attr("\nWelcome to RakoNIX!\n", YELLOW_ON_BLACK);
+  set_text_colour(BLACK, YELLOW);
+  print("\nWelcome to RakoNIX!\n");
+  reset_text_colour();
 
   /* Start handling interrupts */
   idt_install();

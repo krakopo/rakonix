@@ -5,38 +5,37 @@
 /*
  * BIOS colour attribute codes:
  *
- *  Black          0x0
- *  Blue           0x1
- *  Green          0x2
- *  Cyan           0x3
- *  Red            0x4
- *  Magenta        0x5
- *  Brown          0x6
- *  Light Gray     0x7
- *  Dark Gray      0x8
- *  Light Blue     0x9
- *  Light Green    0xA
- *  Light Cyan     0xB
- *  Light Red      0xC
- *  Light Magenta  0xD
- *  Yellow         0xE
- *  White          0xF
- *
  * Use high bits for background and low bits for text colour.
  */
-#define WHITE_ON_BLACK 0x0F
-#define YELLOW_ON_BLACK 0x0E
 
-// Screen I/O ports
+#define BLACK          0x0
+#define BLUE           0x1
+#define GREEN          0x2
+#define CYAN           0x3
+#define RED            0x4
+#define MAGENTA        0x5
+#define BROWN          0x6
+#define LIGHT_GRAY     0x7
+#define DARK_GRAY      0x8
+#define LIGHT_BLUE     0x9
+#define LIGHT_GREEN    0xA
+#define LIGHT_CYAN     0xB
+#define LIGHT_RED      0xC
+#define LIGHT_MAGENTA  0xD
+#define YELLOW         0xE
+#define WHITE          0xF
+
+/* Screen I/O ports */
 #define REG_SCREEN_CTRL 0x3D4
 #define REG_SCREEN_DATA 0x3D5
 
-void print_char(char character, int col, int row, char attribute_byte);
+void print_char(char character, int col, int row);
 int get_cursor();
 void set_cursor(int offset);
 int get_screen_offset(int col, int row);
 int handle_scrolling(int offset);
-void print_at(char* message, int col, int row, char attribute_byte);
+void print_at(char* message, int col, int row);
 void print(char *message);
-void print_with_attr(char *message, char attribute_byte);
 void clear_screen();
+void set_text_colour(unsigned short bgcolour, unsigned short fgcolour);
+void reset_text_colour();
