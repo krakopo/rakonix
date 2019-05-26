@@ -109,9 +109,9 @@ int handle_scrolling(int offset)
 {
   int current_row = offset / (2*MAX_COLS);
 
-  if (current_row == MAX_ROWS)
+  if (current_row > MAX_ROWS)
   {
-    int new_offset = get_screen_offset(0, MAX_ROWS - 1);
+    int new_offset = get_screen_offset(0, MAX_ROWS);
 
     unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS;
 
