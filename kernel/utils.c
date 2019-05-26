@@ -12,6 +12,18 @@ unsigned char *memset(unsigned char *dest, unsigned char value, int num_bytes)
   return dest;
 }
 
+unsigned char *memcpy(unsigned char *dest, unsigned char *src, int num_bytes)
+{
+  int i = 0;
+
+  for (i = 0; i < num_bytes; i++)
+  {
+    dest[i] = src[i];
+  }
+
+  return dest;
+}
+
 void print_hex(unsigned int i)
 {
 #define CHARCOUNT 11 // e.g., 0xDEADBEEF\0
