@@ -1,5 +1,6 @@
-#include "kernel/low_level.h"
 #include "screen.h"
+#include "kernel/low_level.h"
+#include "kernel/utils.h"
 
 // Attribute byte for the text we print.
 // Controls the background and foreground colour.
@@ -106,7 +107,19 @@ void set_cursor(int offset)
 // Do the right thing when we go beyond the last row
 int handle_scrolling(int offset)
 {
-  // TODO Implement
+  int current_row = offset / (2*MAX_COLS);
+
+  if (current_row == MAX_ROWS)
+  {
+    int new_offset = get_screen_offset(0, MAX_ROWS - 1);
+
+    unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS;
+
+    memcpy(vidmem, &vidmem[2*MAX_COLS], 2*MAX_COLS*MAX_ROWS);
+
+    return new_offset;
+  }
+
   return offset;
 }
 
