@@ -1,4 +1,5 @@
 #include "drivers/screen.h"
+#include "kernel/timer.h"
 
 unsigned char *memset(unsigned char *dest, unsigned char value, int num_bytes)
 {
@@ -63,4 +64,9 @@ void print_hex(unsigned int i)
   }
 
   print(hexstr);
+}
+
+void sleep(unsigned int seconds)
+{
+  timer_wait(seconds_to_ticks(seconds));
 }

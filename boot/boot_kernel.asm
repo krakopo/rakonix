@@ -40,7 +40,7 @@ load_kernel:
   ; need to keep this in mind. If our kernel code ever exceeds this
   ; we need to change it to read more sectors otherwise we wont load
   ; the kernel fully.
-  mov dh, 17              ; 17 sectors KERNEL_SIZE_CHECK
+  mov dh, 25              ; 25 sectors KERNEL_SIZE_CHECK
   mov dl, [BOOT_DRIVE]    ; From our boot drive
   call disk_read
   ret
