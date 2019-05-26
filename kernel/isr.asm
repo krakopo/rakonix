@@ -131,7 +131,7 @@ irq0:
   push byte 0    ; IRQs don't push an error code so use a dummy error
                  ; code to keep things consistent with ISRs
   push byte 32
-  jmp isr_common_stub
+  jmp irq_common_stub
 
 global irq1
 irq1:
@@ -216,3 +216,38 @@ isr_common_stub:
     popa
     add esp, 8         ; Cleans up the pushed error code and pushed ISR number
     iret               ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP!
+
+; This is our common IRQ stub. It's the same as its ISR conterpart except
+; we call the handler for IRQs instead.
+extern irq_handler
+irq_common_stub:
+    pusha
+    push ds
+    push es
+    push fs
+    push gs
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov eax, esp
+    push eax
+
+    ; Not sure why we can't just use a regular call here since the
+    ; eip register is saved when the interrupt is triggered
+    ;
+    ;mov eax, irq_handler
+    ;call eax           ; A special call, preserves the 'eip' register
+    ;
+    ; Use a regular call
+    call irq_handler
+
+    pop eax
+    pop gs
+    pop fs
+    pop es
+    pop ds
+    popa
+    add esp, 8
+    iret

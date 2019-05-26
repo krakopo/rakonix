@@ -1,4 +1,5 @@
-#include "kernel/types.h"
+#include "kernel/idt.h"
+#include "kernel/low_level.h"
 #include "kernel/utils.h"
 #include "drivers/screen.h"
 
@@ -58,28 +59,6 @@ void idt_set_handler(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags)
   idt[num].flags = flags;
   idt[num].base_hi = (base >> 16) & 0xffff;
 }
-
-/* This defines what the stack looks like after an ISR was running. */
-struct isr_params
-{
-  /* We pushed the segment addrs last so they are first */
-  uint32_t gs, fs, es, ds;
-
-  /* Pushed by PUSHA instruction */
-  uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
-
-  /* Pushed by our 'PUSH BYTE <int #>' and 'PUSH BYTE <err code>' */
-  uint32_t int_no, err_code;
-
-  /* Pushed by the processor due to the interrupt */
-  uint32_t eip, cs, eflags, useresp, ss;
-
-/*
- * Note no need to use "__attribute__((packed))" since everything
- * here is 32-bits (ie, no padding needed). But we use it anyway
- * to signify that it does need to be packed.
- */
-} __attribute__((packed));
 
 /*
  * Array of exception messages corresponding to interrupt number.
@@ -148,6 +127,56 @@ void idt_default_handler(struct isr_params *isrp)
   }
 }
 
+/*
+ * This array is actually an array of function pointers.
+ * We use this to handle custom IRQ handlers for a given IRQ.
+ */
+void *irq_custom_handlers[16] = { 0 };
+
+/* Install customer IRQ handler */
+void irq_install_custom_handler(int irq_num, void (*handler)(struct isr_params *p))
+{
+  irq_custom_handlers[irq_num] = handler;
+}
+
+/*
+ * Each of the IRQ ISRs point to this function, rather than
+ *  the 'fault_handler' in 'isrs.c'. The IRQ Controllers need
+ *  to be told when you are done servicing them, so you need
+ *  to send them an "End of Interrupt" command (0x20). There
+ *  are two 8259 chips: The first exists at 0x20, the second
+ *  exists at 0xA0. If the second controller (an IRQ from 8 to
+ *  15) gets an interrupt, you need to acknowledge the
+ *  interrupt at BOTH controllers, otherwise, you only send
+ *  an EOI command to the first controller. If you don't send
+ *  an EOI, you won't raise any more IRQs.
+ */
+void irq_handler(struct isr_params *isrp)
+{
+  /* Function pointer */
+  void (*handler)(struct isr_params *p);
+
+  /* If we have a custom handler for this IRQ, run it */
+  handler = irq_custom_handlers[isrp->int_no - 32];
+  if (handler)
+  {
+    handler(isrp);
+  }
+
+  /*
+   * If the IDT entry that was invoked was greater than 40
+   * (meaning IRQ8 - 15), then we need to send an EOI to
+   * the slave controller.
+   */
+  if (isrp->int_no >= 40)
+  {
+    port_byte_out(0xA0, 0x20);
+  }
+
+  /* We always need to send an EOI to the master interrupt controller. */
+  port_byte_out(0x20, 0x20);
+}
+
 /* All our assembly ISR entry points */
 extern void isr0();
 extern void isr1();
@@ -199,7 +228,6 @@ extern void irq12();
 extern void irq13();
 extern void irq14();
 extern void irq15();
-
 
 /*
  * Normally, IRQs 0 to 7 are mapped to entries 8 to 15.
