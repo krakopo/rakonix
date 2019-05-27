@@ -135,6 +135,11 @@ irq0:
 
 global irq1
 irq1:
+  cli
+  push byte 0    ; IRQs don't push an error code so use a dummy error
+                 ; code to keep things consistent with ISRs
+  push byte 33
+  jmp irq_common_stub
 
 global irq2
 irq2:

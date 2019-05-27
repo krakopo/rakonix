@@ -1,5 +1,6 @@
-#include "drivers/screen.h"
 #include "kernel/utils.h"
+#include "drivers/screen.h"
+#include "drivers/keyboard.h"
 
 /* Forward declaration for function to setup IDT */
 void idt_install();
@@ -19,6 +20,9 @@ void main()
   /* Handle timer interrupts */
   timer_install();
 
+  /* Handle keyboard interrupts */
+  keyboard_install();
+
   /* Enable interrupts using the STI (Set Interrupt Flag) instruction */
   __asm__ __volatile__ ("sti");
 
@@ -28,7 +32,6 @@ void main()
   //int e = 10 / 0;
 
   /* Timer interrupt test */
-#if 0
   int i = 0;
 
   while (1)
@@ -38,5 +41,4 @@ void main()
     print("\n");
     i++;
   }
-#endif
 }
