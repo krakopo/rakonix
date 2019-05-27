@@ -1,10 +1,9 @@
 #include "kernel/utils.h"
 #include "drivers/screen.h"
-#include "drivers/keyboard.h"
 
-/* Forward declaration for function to setup IDT */
+/* Forward declarations */
 void idt_install();
-
+void keyboard_install();
 void timer_install();
 
 void main()

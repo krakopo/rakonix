@@ -1,13 +1,11 @@
-#define VIDEO_ADDRESS 0xb8000
-#define MAX_ROWS 25
-#define MAX_COLS 80
+#ifndef SCREEN_H
+#define SCREEN_H
 
 /*
  * BIOS colour attribute codes:
  *
  * Use high bits for background and low bits for text colour.
  */
-
 #define BLACK          0x0
 #define BLUE           0x1
 #define GREEN          0x2
@@ -25,17 +23,9 @@
 #define YELLOW         0xE
 #define WHITE          0xF
 
-/* Screen I/O ports */
-#define REG_SCREEN_CTRL 0x3D4
-#define REG_SCREEN_DATA 0x3D5
-
-void print_char(char character, int col, int row);
-int get_cursor();
-void set_cursor(int offset);
-int get_screen_offset(int col, int row);
-int handle_scrolling(int offset);
-void print_at(char* message, int col, int row);
 void print(char *message);
-void clear_screen();
 void set_text_colour(unsigned short bgcolour, unsigned short fgcolour);
 void reset_text_colour();
+void clear_screen();
+
+#endif /* SCREEN_H */

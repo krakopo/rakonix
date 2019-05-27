@@ -66,6 +66,12 @@ void print_hex(unsigned int i)
   print(hexstr);
 }
 
+void print_char(unsigned char c)
+{
+  char str[] = { c, '\0' };
+  print(str);
+}
+
 void sleep(unsigned int seconds)
 {
   timer_wait(seconds_to_ticks(seconds));

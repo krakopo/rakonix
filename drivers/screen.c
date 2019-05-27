@@ -1,13 +1,94 @@
 #include "screen.h"
 #include "kernel/low_level.h"
-#include "kernel/utils.h"
+
+/* Screen constants */
+#define VIDEO_ADDRESS 0xb8000
+#define MAX_ROWS 25
+#define MAX_COLS 80
+
+/* Screen I/O ports */
+#define REG_SCREEN_CTRL 0x3D4
+#define REG_SCREEN_DATA 0x3D5
 
 // Attribute byte for the text we print.
 // Controls the background and foreground colour.
 unsigned int attribute_byte = 0;
 
+// Given a row and column, return the corresponding screen offset
+static int get_screen_offset(int col, int row)
+{
+  int offset = 0;
+
+  if (col >= 0 && row >= 0)
+  {
+    offset = (row * 2*MAX_COLS) + (col * 2);
+  }
+
+  return offset;
+}
+
+// Get the offset of the current cursor location as stored by the
+// screen device.
+static int get_cursor()
+{
+  int offset = 0;
+
+  // The screen device uses its control register as an index to
+  // select its internal registers of which we are interested in:
+  //   reg 14: high byte of cursor's location
+  //   reg 15: low byte of cursor's location
+  // Once the internal register has been selected we may read or
+  // write a byte on the data register.
+
+  port_byte_out(REG_SCREEN_CTRL, 14);
+  offset = port_byte_in(REG_SCREEN_DATA) << 8;
+
+  port_byte_out(REG_SCREEN_CTRL, 15);
+  offset += port_byte_in(REG_SCREEN_DATA);
+
+  // Convert from character offset to 2-byte offset
+  return offset * 2;
+}
+
+// Set the current cursor location for the screen device based on the
+// given offset.
+static void set_cursor(int offset)
+{
+  // Convert from 2-byte offset to character offset
+  offset /= 2;
+
+  port_byte_out(REG_SCREEN_CTRL, 14);
+  port_byte_out(REG_SCREEN_DATA, (unsigned char)(offset >> 8));
+
+  port_byte_out(REG_SCREEN_CTRL, 15);
+  port_byte_out(REG_SCREEN_DATA, (unsigned char)offset);
+}
+
+// Do the right thing when we go beyond the last row
+static int handle_scrolling(int offset)
+{
+  int current_row = offset / (2*MAX_COLS);
+
+  if (current_row == MAX_ROWS)
+  {
+    int new_offset = get_screen_offset(0, MAX_ROWS - 1);
+
+    unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS;
+
+    int i = 0;
+    for (i = 0; i < 2*MAX_COLS*MAX_ROWS; i++)
+    {
+      vidmem[i] = vidmem[2*MAX_COLS + i];
+    }
+
+    return new_offset;
+  }
+
+  return offset;
+}
+
 // Print a character on the screen at col, row or at cursor position
-void print_char(char character, int col, int row)
+static void print_char(char character, int col, int row)
 {
   unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS;
   int offset = 0;
@@ -54,77 +135,8 @@ void print_char(char character, int col, int row)
   set_cursor(offset);
 }
 
-// Given a row and column, return the corresponding screen offset
-int get_screen_offset(int col, int row)
-{
-  int offset = 0;
-
-  if (col >= 0 && row >= 0)
-  {
-    offset = (row * 2*MAX_COLS) + (col * 2);
-  }
-
-  return offset;
-}
-
-// Get the offset of the current cursor location as stored by the
-// screen device.
-int get_cursor()
-{
-  int offset = 0;
-
-  // The screen device uses its control register as an index to
-  // select its internal registers of which we are interested in:
-  //   reg 14: high byte of cursor's location
-  //   reg 15: low byte of cursor's location
-  // Once the internal register has been selected we may read or
-  // write a byte on the data register.
-
-  port_byte_out(REG_SCREEN_CTRL, 14);
-  offset = port_byte_in(REG_SCREEN_DATA) << 8;
-
-  port_byte_out(REG_SCREEN_CTRL, 15);
-  offset += port_byte_in(REG_SCREEN_DATA);
-
-  // Convert from character offset to 2-byte offset
-  return offset * 2;
-}
-
-// Set the current cursor location for the screen device based on the
-// given offset.
-void set_cursor(int offset)
-{
-  // Convert from 2-byte offset to character offset
-  offset /= 2;
-
-  port_byte_out(REG_SCREEN_CTRL, 14);
-  port_byte_out(REG_SCREEN_DATA, (unsigned char)(offset >> 8));
-
-  port_byte_out(REG_SCREEN_CTRL, 15);
-  port_byte_out(REG_SCREEN_DATA, (unsigned char)offset);
-}
-
-// Do the right thing when we go beyond the last row
-int handle_scrolling(int offset)
-{
-  int current_row = offset / (2*MAX_COLS);
-
-  if (current_row == MAX_ROWS)
-  {
-    int new_offset = get_screen_offset(0, MAX_ROWS - 1);
-
-    unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS;
-
-    memcpy(vidmem, &vidmem[2*MAX_COLS], 2*MAX_COLS*MAX_ROWS);
-
-    return new_offset;
-  }
-
-  return offset;
-}
-
 // Print a string at a given column and row
-void print_at(char *message, int col, int row)
+static void print_at(char *message, int col, int row)
 {
   char *character = message;
 

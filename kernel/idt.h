@@ -25,7 +25,6 @@ struct isr_params
  */
 } __attribute__((packed));
 
-void idt_set_handler(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags);
 void irq_install_custom_handler(int irq_num, void (*handler)(struct isr_params *p));
 
 #endif /* IDT_H */

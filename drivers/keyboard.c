@@ -1,4 +1,3 @@
-#include "drivers/keyboard.h"
 #include "drivers/screen.h"
 #include "kernel/low_level.h"
 #include "kernel/utils.h"
@@ -72,7 +71,7 @@ int capslock_flag = 0;
 int shift_held_flag = 0;
 
 /* Handler for keyboard interrupts */
-void keyboard_handler(struct isr_params *isrp)
+static void keyboard_handler(struct isr_params *isrp)
 {
   unsigned char scancode;
 
@@ -99,8 +98,8 @@ void keyboard_handler(struct isr_params *isrp)
 
     unsigned char key_pressed = keymap[scancode];
 
-  print("\nScan code: ");
-  print_hex(scancode);
+    print("\nScan code: ");
+    print_hex(scancode);
 
     switch(key_pressed)
     {
@@ -122,7 +121,7 @@ void keyboard_handler(struct isr_params *isrp)
             key_pressed -= 32;
           }
         }
-        print_char(key_pressed, -1, -1);
+        print_char(key_pressed);
         print("\n");
         break;
     }
@@ -130,7 +129,7 @@ void keyboard_handler(struct isr_params *isrp)
 }
 
 /* Populate the scan code to key map for a US keyboard */
-void populate_keymap_US()
+static void populate_keymap_US()
 {
   keymap[0x00] = KEYBOARD_ERROR;
   keymap[0x01] = ESC_KEY;

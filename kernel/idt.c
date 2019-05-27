@@ -141,15 +141,15 @@ void irq_install_custom_handler(int irq_num, void (*handler)(struct isr_params *
 
 /*
  * Each of the IRQ ISRs point to this function, rather than
- *  the 'fault_handler' in 'isrs.c'. The IRQ Controllers need
- *  to be told when you are done servicing them, so you need
- *  to send them an "End of Interrupt" command (0x20). There
- *  are two 8259 chips: The first exists at 0x20, the second
- *  exists at 0xA0. If the second controller (an IRQ from 8 to
- *  15) gets an interrupt, you need to acknowledge the
- *  interrupt at BOTH controllers, otherwise, you only send
- *  an EOI command to the first controller. If you don't send
- *  an EOI, you won't raise any more IRQs.
+ * the 'fault_handler' in 'isrs.c'. The IRQ Controllers need
+ * to be told when you are done servicing them, so you need
+ * to send them an "End of Interrupt" command (0x20). There
+ * are two 8259 chips: The first exists at 0x20, the second
+ * exists at 0xA0. If the second controller (an IRQ from 8 to
+ * 15) gets an interrupt, you need to acknowledge the
+ * interrupt at BOTH controllers, otherwise, you only send
+ * an EOI command to the first controller. If you don't send
+ * an EOI, you won't raise any more IRQs.
  */
 void irq_handler(struct isr_params *isrp)
 {
