@@ -10,7 +10,7 @@ void main()
 {
   /* Print welcome banner */
   set_text_colour(BLACK, YELLOW);
-  print("\nWelcome to RakoNIX!\n");
+  printf("Welcome to RakoNIX!\n");
   reset_text_colour();
 
   /* Setup IDT and install default interrupt handlers */
@@ -36,8 +36,7 @@ void main()
   while (1)
   {
     sleep(1);
-    print_hex(i);
-    print("\n");
+    printf("0x%x\n", i);
     i++;
   }
 }

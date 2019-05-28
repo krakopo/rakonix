@@ -1,4 +1,3 @@
-#include "drivers/screen.h"
 #include "kernel/low_level.h"
 #include "kernel/utils.h"
 #include "kernel/idt.h"
@@ -98,8 +97,7 @@ static void keyboard_handler(struct isr_params *isrp)
 
     unsigned char key_pressed = keymap[scancode];
 
-    print("\nScan code: ");
-    print_hex(scancode);
+    printf("Scan code: 0x%x\n", scancode);
 
     switch(key_pressed)
     {
@@ -113,7 +111,6 @@ static void keyboard_handler(struct isr_params *isrp)
         break;
 
       default:
-        print(", Key: ");
         if (capslock_flag || shift_held_flag)
         {
           if (key_pressed >= 'a' && key_pressed <= 'z')
@@ -121,8 +118,7 @@ static void keyboard_handler(struct isr_params *isrp)
             key_pressed -= 32;
           }
         }
-        print_char(key_pressed);
-        print("\n");
+        printf("Key: %c\n", key_pressed);
         break;
     }
   }
