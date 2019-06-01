@@ -12,7 +12,8 @@ mov bp, 0x8000
 mov sp, bp
 
 mov bx, 0x9000       ; Load to address 0x9000
-mov dh, 2            ; Read 2 sectors
+mov al, 2            ; Read 2 sectors
+mov cl, 2            ; Start from offset 2 (first sector after boot sector)
 mov dl, [BOOT_DRIVE] ; Set disk to use in dl
 call disk_read
 

@@ -41,4 +41,4 @@ init_pm:
   mov esp, ebp
 
   ; Call some defined entry point function
-  call BEGIN_PM
+  jmp BEGIN_PM
