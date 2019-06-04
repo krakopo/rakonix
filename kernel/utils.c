@@ -30,7 +30,7 @@ void sleep(unsigned int seconds)
   timer_wait(seconds_to_ticks(seconds));
 }
 
-char *itoa(int i, char *str, int base)
+char *itoa(unsigned int i, char *str, int base)
 {
   if (i == 0)
   {
@@ -39,7 +39,7 @@ char *itoa(int i, char *str, int base)
     return str;
   }
 
-  int j = i;
+  unsigned int j = i;
 
   int num_digits = 0;
 
@@ -49,11 +49,10 @@ char *itoa(int i, char *str, int base)
     j = j / base;
   }
 
-  int curr_digit = num_digits;
-  str[curr_digit] = '\0';
-  curr_digit--;
+  str[num_digits] = '\0';
+  int curr_digit = num_digits - 1;
 
-  while (i != 0)
+  while (curr_digit >= 0)
   {
     int remainder = i % base;
 
