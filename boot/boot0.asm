@@ -31,7 +31,7 @@ call print_newline
 
 call load_boot1          ; Load the boot stage 1 code into memory
 
-mov dl, [BOOT_DRIVE]     ; Pass the boot drive info to boot stage 1
+push word [BOOT_DRIVE]   ; Pass the boot drive info to boot stage 1 via stack
 jmp BOOT1_OFFSET         ; Transfer control to boot stage 1
 
 jmp $                    ; Should never get here
@@ -47,7 +47,7 @@ load_boot1:
   call print_newline
 
   mov bx, BOOT1_OFFSET   ; Read into BOOT1_OFFSET
-  mov al, 1              ; Number of sectors BOOT1_SIZE_CHECK_MARKER
+  mov al, 4              ; Number of sectors BOOT1_SIZE_CHECK_MARKER
   mov cl, 0x2            ; Starting the 2nd sector (ie after boot sector)
   mov dl, [BOOT_DRIVE]   ; From our boot drive
   call disk_read
