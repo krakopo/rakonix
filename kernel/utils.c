@@ -152,3 +152,87 @@ void printf(const char *fmt, ...)
   __builtin_va_end(list);
   print(str);
 }
+
+static void call_cpuid(unsigned int input, unsigned int *output)
+{
+  __asm__ __volatile__(
+    /* Assembly to run CPUID instruction */
+    "cpuid"
+
+    /* Outputs to EAX, EBX, ECX and EDX */
+    : "=a" (output[0]), /* Saves EAX register into variable */
+      "=b" (output[1]), /* Saves EBX register into variable */
+      "=c" (output[2]), /* Saves ECX register into variable */
+      "=d" (output[3])  /* Saves EDX register into variable */
+
+    /* Input is EAX */
+    : "a" (input)       /* Sets EAX */ );
+}
+
+void cpuid()
+{
+  /*
+   * Check for the CPUID instruction by trying to modify the ID flag in EFLAGS.
+   * If the ID flag cannot by modified, the CPUID instruction is not supported.
+   */
+
+  /* EFLAGS ID field is bit number 21 */
+  const unsigned int EFLAGS_ID_BIT = 0x200000;
+
+  /* Get current value of EFLAGS using PUSHF & POP */
+  unsigned int eflags = 0;
+  __asm__ __volatile__ ("pushf; pop %0" : "=r" (eflags));
+
+  /* Set the ID bit and update EFLAGS using POPF */
+  unsigned int old_eflags = eflags;
+  eflags |= EFLAGS_ID_BIT;
+  __asm__ __volatile__ ("push %0; popf" : : "r" (eflags));
+
+  /* Re-read EFLAGS to see if our change is still there */
+  __asm__ __volatile__ ("pushf; pop %0" : "=r" (eflags));
+
+  if (!(eflags & EFLAGS_ID_BIT))
+  {
+    printf("CPUID instruction is not supported.\n");
+    return;
+  }
+
+  /*
+   * Execute the CPUID instruction with EAX equal to 0x80000000. If the value
+   * returned in EAX is greater than 0x80000000, the brand string feature is
+   * supported and we can use 0x80000002 to 0x80000004 to identify the processor.
+   */
+
+  const unsigned int CPUID_INPUT_DETECT = 0x80000000;
+
+  unsigned int cpuid_eax_out = 0;
+  unsigned int cpu_vendor_str[4];
+
+  call_cpuid(CPUID_INPUT_DETECT, cpu_vendor_str);
+
+  cpuid_eax_out = cpu_vendor_str[0]; /* Save EAX */
+
+  cpu_vendor_str[0] = cpu_vendor_str[1]; /* String starts at EBX */
+
+  /* Swap 1 and 3 since the string is EBX + EDX + ECX */
+  cpu_vendor_str[1] = cpu_vendor_str[3];
+
+  cpu_vendor_str[3] = 0; /* Set NULL terminator */
+
+  printf("CPU Vendor: %s\n", (char *) cpu_vendor_str);
+
+  if (cpuid_eax_out > CPUID_INPUT_DETECT)
+  {
+    unsigned int cpu_brand_str[12];
+
+    const unsigned int CPUID_BRAND_STRING_INPUT_1 = 0x80000002;
+    const unsigned int CPUID_BRAND_STRING_INPUT_2 = 0x80000003;
+    const unsigned int CPUID_BRAND_STRING_INPUT_3 = 0x80000004;
+
+    call_cpuid(CPUID_BRAND_STRING_INPUT_1, cpu_brand_str);
+    call_cpuid(CPUID_BRAND_STRING_INPUT_2, cpu_brand_str + 4);
+    call_cpuid(CPUID_BRAND_STRING_INPUT_3, cpu_brand_str + 8);
+
+    printf("CPU Brand: %s\n", cpu_brand_str);
+  }
+}

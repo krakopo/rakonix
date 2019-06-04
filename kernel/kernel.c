@@ -27,6 +27,8 @@ void main()
   /* Enable interrupts using the STI (Set Interrupt Flag) instruction */
   __asm__ __volatile__ ("sti");
 
+  cpuid();
+
   printf("pitch width height: %d %d %d\n", vbe_mode_info->pitch, vbe_mode_info->width, vbe_mode_info->height);
   printf("framebuffer: 0x%x\n", vbe_mode_info->framebuffer);
   while (1);
