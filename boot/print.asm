@@ -20,6 +20,33 @@ print_string_finished:
   popa
   ret
 
+; Print 16-bit decimal number in bx to screen
+;
+print_decimal:
+  pusha
+  mov ax, bx ; store bx in ax for DIV
+  mov bx, 0  ; keep count of number of digits to print
+print_decimal_loop:
+  ; DIV: Divide AX by operand, remainder goes into DX, quotient into AX
+  xor dx, dx ; clear dx first
+  mov cx, 10
+  div cx
+  push dx    ; put digit to print on stack
+  add bx, 1
+  cmp ax, 0
+  je print_decimal_print
+  jmp print_decimal_loop
+print_decimal_print:
+  cmp bx, 0
+  je print_decimal_end
+  pop cx
+  call print_digit
+  sub bx, 1
+  jmp print_decimal_print
+print_decimal_end:
+  popa
+  ret
+
 ; Print 16-bit hex number in bx to screen
 ;
 print_hex:
