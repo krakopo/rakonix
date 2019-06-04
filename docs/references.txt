@@ -1,2 +1,6 @@
 http://www.osdever.net/bkerndev/Docs/title.htm
 http://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf
+http://www.cs.cmu.edu/~410-s07/p4/p4-boot.pdf
+https://blog.ghaiklor.com/how-to-implement-a-second-stage-boot-loader-80e75ae4270c
+http://www.independent-software.com/operating-system-development.html
+https://cs.lmu.edu/~ray/notes/nasmtutorial/
