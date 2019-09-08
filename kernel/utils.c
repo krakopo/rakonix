@@ -1,4 +1,5 @@
 #include "drivers/screen.h"
+#include "drivers/vesa.h"
 #include "kernel/timer.h"
 
 unsigned char *memset(unsigned char *dest, unsigned char value, int num_bytes)
@@ -150,7 +151,51 @@ void printf(const char *fmt, ...)
   }
   *c = '\0';
   __builtin_va_end(list);
-  print(str);
+
+  if (vesa_supported())
+  {
+    vesa_print(str);
+  }
+  else
+  {
+    screen_print(str);
+  }
+}
+
+void set_text_colour(int bgcolour, int fgcolour)
+{
+  if (vesa_supported())
+  {
+    vesa_set_text_colour(vesa_colour_codes[bgcolour], vesa_colour_codes[fgcolour]);
+  }
+  else
+  {
+    screen_set_text_colour(bgcolour, fgcolour);
+  }
+}
+
+void reset_text_colour()
+{
+  if (vesa_supported())
+  {
+    vesa_reset_text_colour();
+  }
+  else
+  {
+    screen_reset_text_colour();
+  }
+}
+
+void clear_screen()
+{
+  if (vesa_supported())
+  {
+    vesa_clear_screen();
+  }
+  else
+  {
+    screen_clear_screen();
+  }
 }
 
 static void call_cpuid(unsigned int input, unsigned int *output)

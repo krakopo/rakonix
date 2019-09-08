@@ -96,7 +96,7 @@ static void print_char(char character, int col, int row)
   // If we didn't get a valid attribute byte then use the default.
   if (!attribute_byte)
   {
-    reset_text_colour();
+    screen_reset_text_colour();
   }
 
   // If we got a valid position on screen use that otherwise use
@@ -148,13 +148,13 @@ static void print_at(char *message, int col, int row)
 }
 
 // Print a string at the current cursor location with default attributes
-void print(char *message)
+void screen_print(char *message)
 {
   print_at(message, -1, -1);
 }
 
 // Clear the screen and set cursor to the top left
-void clear_screen()
+void screen_clear_screen()
 {
   int row = 0;
   int col = 0;
@@ -171,13 +171,13 @@ void clear_screen()
 }
 
 // Set the attribute byte to the desired background and foreground colour
-void set_text_colour(unsigned short bgcolour, unsigned short fgcolour)
+void screen_set_text_colour(unsigned short bgcolour, unsigned short fgcolour)
 {
   attribute_byte = (bgcolour << 4) | (fgcolour & 0x0F);
 }
 
 // Set the attribute byte to the default background and foreground colour
-void reset_text_colour()
+void screen_reset_text_colour()
 {
-  set_text_colour(BLACK, WHITE);
+  screen_set_text_colour(BLACK, WHITE);
 }

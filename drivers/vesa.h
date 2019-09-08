@@ -1,3 +1,28 @@
+#ifndef VESA_H
+#define VESA_H
+
+#include "kernel/types.h"
+
+static int vesa_colour_codes[] =
+{
+  /* BLACK          */ 0x000000,
+  /* BLUE           */ 0x0000ff,
+  /* GREEN          */ 0x00ff00,
+  /* CYAN           */ 0x00ffff,
+  /* RED            */ 0xff0000,
+  /* MAGENTA        */ 0xff00ff,
+  /* BROWN          */ 0xa52a2a,
+  /* LIGHT_GRAY     */ 0xd3d3d3,
+  /* DARK_GRAY      */ 0xa9a9a9,
+  /* LIGHT_BLUE     */ 0xadd8e6,
+  /* LIGHT_GREEN    */ 0x90ee90,
+  /* LIGHT_CYAN     */ 0xe0ffff,
+  /* LIGHT_RED      */ 0xff9d9d,
+  /* LIGHT_MAGENTA  */ 0xff9dff,
+  /* YELLOW         */ 0xffff00,
+  /* WHITE          */ 0xffffff
+};
+
 struct vbe_mode_info_structure
 {
   uint16_t attributes;    // deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.
@@ -29,7 +54,7 @@ struct vbe_mode_info_structure
   uint8_t blue_position;
   uint8_t reserved_mask;
   uint8_t reserved_position;
-  uint8_t direct_color_attributes;
+  uint8_t direct_colour_attributes;
  
   uint32_t framebuffer;   // physical address of the linear frame buffer; write here to draw to the screen
   uint32_t off_screen_mem_off;
@@ -38,3 +63,13 @@ struct vbe_mode_info_structure
 } __attribute__ ((packed));
 
 extern struct vbe_mode_info_structure *vbe_mode_info;
+
+extern unsigned char *fonts;
+
+int vesa_supported();
+void vesa_print(char *str);
+void vesa_clear_screen();
+void vesa_set_text_colour(int bgcolour, int fgcolour);
+void vesa_reset_text_colour();
+
+#endif /* VESA_H */

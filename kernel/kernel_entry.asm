@@ -6,8 +6,11 @@
 ;
 [bits 32]
 [extern main]
+pop dword [fonts]
 pop dword [vbe_mode_info]
 call main
 jmp $
 global vbe_mode_info
 vbe_mode_info dd 0
+global fonts
+fonts dd 0

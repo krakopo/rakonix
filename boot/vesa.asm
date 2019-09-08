@@ -169,7 +169,7 @@ vesa_init:
   mov ax, VBE_SET_MODE_CODE ; set vbe mode function
   mov bx, 0x0144 ; desired mode
   or bx, 0x4000  ; set bit 14 for linearframebuffer
-  ;int 0x10
+  int 0x10
   cmp ax, VBE_ERROR_CODE
   jne vbe_error
 
@@ -200,36 +200,36 @@ vbe_info_structure:
   .oem_data     times(512) db 0
 
 vbe_mode_structure:
-  .attributes              dw 0
-  .window_a                db 0
-  .window_b                db 0
-  .granularity             dw 0
-  .window_size             dw 0
-  .segment_a               dw 0
-  .segment_b               dw 0
-  .win_func_ptr            dd 0
-  .pitch                   dw 0
-  .width                   dw 0
-  .height                  dw 0
-  .w_char                  db 0
-  .y_char                  db 0
-  .planes                  db 0
-  .bpp                     db 0
-  .banks                   db 0
-  .memory_model            db 0
-  .bank_size               db 0
-  .image_pages             db 0
-  .reserved0               db 0
-  .red_mask_num_bits       db 0
-  .red_mask_start_bit      db 0
-  .green_mask_num_bits     db 0
-  .green_mask_start_bit    db 0
-  .blue_mask_num_bits      db 0
-  .blue_mask_start_bit     db 0
-  .reserved_mask           db 0
-  .reserved_position       db 0
-  .direct_color_attributes db 0
-  .framebuffer             dd 0
-  .off_screen_mem_off      dd 0
-  .off_screen_mem_size     dw 0
-  .reserved times(206)     db 0
+  .attributes               dw 0
+  .window_a                 db 0
+  .window_b                 db 0
+  .granularity              dw 0
+  .window_size              dw 0
+  .segment_a                dw 0
+  .segment_b                dw 0
+  .win_func_ptr             dd 0
+  .pitch                    dw 0
+  .width                    dw 0
+  .height                   dw 0
+  .w_char                   db 0
+  .y_char                   db 0
+  .planes                   db 0
+  .bpp                      db 0
+  .banks                    db 0
+  .memory_model             db 0
+  .bank_size                db 0
+  .image_pages              db 0
+  .reserved0                db 0
+  .red_mask_num_bits        db 0
+  .red_mask_start_bit       db 0
+  .green_mask_num_bits      db 0
+  .green_mask_start_bit     db 0
+  .blue_mask_num_bits       db 0
+  .blue_mask_start_bit      db 0
+  .reserved_mask            db 0
+  .reserved_position        db 0
+  .direct_colour_attributes db 0
+  .framebuffer              dd 0
+  .off_screen_mem_off       dd 0
+  .off_screen_mem_size      dw 0
+  .reserved times(206)      db 0

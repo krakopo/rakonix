@@ -23,9 +23,9 @@
 #define YELLOW         0xE
 #define WHITE          0xF
 
-void print(char *message);
-void set_text_colour(unsigned short bgcolour, unsigned short fgcolour);
-void reset_text_colour();
-void clear_screen();
+void screen_print(char *message);
+void screen_set_text_colour(unsigned short bgcolour, unsigned short fgcolour);
+void screen_reset_text_colour();
+void screen_clear_screen();
 
 #endif /* SCREEN_H */
