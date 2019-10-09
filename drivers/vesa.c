@@ -15,7 +15,7 @@ int current_bgcolour = DEFAULT_BGCOLOUR;
 void putpixel(int x, int y, int colour)
 {
   unsigned char *screen = (unsigned char *) vbe_mode_info->framebuffer;
-  unsigned int where = y * 0x1000 + x * 4;
+  unsigned int where = y * vbe_mode_info->pitch + x * 4;
   screen[where] = colour & 0xff;
   screen[where + 1] = (colour >> 8) & 0xff;
   screen[where + 2] = (colour >> 16) & 0xff;
