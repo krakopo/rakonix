@@ -1,10 +1,18 @@
-; Handle interactions with VESA BIOS Extensions (VBE) which must be done
-; in real mode (before we switch control to the kernel). This code will be
-; used by the second stage of our boot loader to set the VBE mode.
+;
+; Handle interactions with VESA BIOS Extensions (VBE). This must be done
+; in real mode, before we give control to the kernel.
+;
+; This code will be called by the second stage of our boot loader to set
+; the VBE mode.
+;
 ; Any information about VBE (eg video memory address) needed by the kenrel
 ; will be passed to it by the boot loader.
+;
 
 [bits 16]
+
+; Load keyboard routines for handling user input
+%include "keyboard.asm"
 
 VBE_INFO_CODE      equ 0x4f00
 VBE_MODE_INFO_CODE equ 0x4f01
@@ -23,31 +31,15 @@ vesa_init:
   jne vbe_error
 
   ; Expect "VESA" in the signature
-
   cmp dword [vbe_info_structure.signature], 'VESA'
   jne vbe_error
 
-  mov bx, [vbe_info_structure.version]
-  call print_hex
-  call print_newline
-
-  mov cx, [vbe_info_structure.vendor]
-  mov bx, [ecx]
-  call print_hex
-  call print_newline
-
-  mov cx, [vbe_info_structure.product_name]
-  mov bx, [ecx]
-  call print_hex
-  call print_newline
-
-  mov bx, [vbe_info_structure.video_memory]
-  call print_hex
-  call print_newline
-
-  call print_newline
-
   ; Loop over array of modes and get information for each
+  call print_newline
+  mov bx, VBE_MODE_LIST_MSG
+  call print_string
+  call print_newline
+  call print_newline
   mov edx, [vbe_info_structure.video_modes]
   loop_modes:
   mov bx, [edx]
@@ -69,12 +61,26 @@ vesa_init:
   cmp dx, 0
   je next_mode
 
-  ; Filter out widths != 1024
-  mov dx, [vbe_mode_structure.width]
-  cmp dx, 1024
+  ; Filter out modes that don't have 32 bits per pixel
+  mov dx, [vbe_mode_structure.bpp]
+  cmp dl, 32
   jne next_mode
 
   ; Print the mode number, width, height and bits per pixel
+  mov bx, [vbe_mode_count]
+  call print_decimal
+  mov ah, 0x0e
+  mov al, ')'
+  int 0x10
+  mov ah, 0x0e
+  mov al, ' '
+  int 0x10
+
+  mov ax, [vbe_mode_count]
+  mov bx, 2
+  mul bx
+  mov bx, ax
+  mov [vbe_mode_list + bx], cx
   mov bx, cx
   call print_hex
 
@@ -82,7 +88,7 @@ vesa_init:
   mov al, ' '
   int 0x10
 
-  mov bx, dx
+  mov bx, [vbe_mode_structure.width]
   call print_decimal
 
   mov ah, 0x0e
@@ -102,6 +108,10 @@ vesa_init:
 
   call print_newline
 
+  mov bx, [vbe_mode_count]
+  add bx, 1
+  mov [vbe_mode_count], bx
+
   next_mode:
   pop edx
   add edx, 2
@@ -110,65 +120,46 @@ vesa_init:
   end_loop_modes:
   call print_newline
 
-  ; Assume we want mode 0x0144 (1024 x 768 x 32bpp)
-  ; TODO Don't assume this, need to hanlde it better. Maybe we pass the desired
-  ;      size to vbe_init and if it exists, use it below.
+  ; Ask user which mode to use
+  ask_vbe_mode:
+  mov bx, VBE_SELECT_MODE_MSG
+  call print_string
+  call keyboard_get_number ; Number in AX
+  cmp ax, [vbe_mode_count]
+  jl valid_vbe_mode_selected
+  mov bx, VBE_INVALID_MODE_MSG
+  call print_string
+  call print_newline
+  jmp ask_vbe_mode
+  valid_vbe_mode_selected:
+  mov bx, 2
+  mul bx
+  add ax, vbe_mode_list
+  mov bx, [eax] ; Desired mode in BX
 
   ; Call VBE function to get mode information
   mov ax, VBE_MODE_INFO_CODE
-  mov cx, 0x0144
+  mov cx, bx
   mov di, vbe_mode_structure
   int 0x10
   cmp ax, VBE_ERROR_CODE
   jne vbe_error
 
-  mov bx, [vbe_mode_structure.memory_model]
-  mov bh, 0 ; only want the lower 8 bits
-  call print_hex
-  call print_newline
+  ; Print address of framebuffer
+  ;mov ebx, [vbe_mode_structure.framebuffer]
+  ;push ebx
+  ;shr ebx, 16
+  ;call print_hex
+  ;call print_newline
+  ;pop ebx
+  ;and ebx, 0xffff
+  ;call print_hex
+  ;call print_newline
+  ;call keyboard_wait_for_enter_key
 
-  mov ebx, [vbe_mode_structure.framebuffer]
-  push ebx
-  shr ebx, 16
-  call print_hex
-  call print_newline
-  pop ebx
-  and ebx, 0xffff
-  call print_hex
-  call print_newline
-
-  mov bx, [vbe_mode_structure.red_mask_num_bits]
-  mov bh, 0 ; only want the lower 8 bits
-  call print_hex
-  call print_newline
-  mov bx, [vbe_mode_structure.red_mask_start_bit]
-  mov bh, 0 ; only want the lower 8 bits
-  call print_hex
-  call print_newline
-  mov bx, [vbe_mode_structure.green_mask_num_bits]
-  mov bh, 0 ; only want the lower 8 bits
-  call print_hex
-  call print_newline
-  mov bx, [vbe_mode_structure.green_mask_start_bit]
-  mov bh, 0 ; only want the lower 8 bits
-  call print_hex
-  call print_newline
-  mov bx, [vbe_mode_structure.blue_mask_num_bits]
-  mov bh, 0 ; only want the lower 8 bits
-  call print_hex
-  call print_newline
-  mov bx, [vbe_mode_structure.blue_mask_start_bit]
-  mov bh, 0 ; only want the lower 8 bits
-  call print_hex
-  call print_newline
-  mov bx, [vbe_mode_structure.pitch]
-  call print_hex
-  call print_newline
-
-  ; Call VBE function to set the mode
-  mov ax, VBE_SET_MODE_CODE ; set vbe mode function
-  mov bx, 0x0144 ; desired mode
-  or bx, 0x4000  ; set bit 14 for linearframebuffer
+  ; Call VBE function to set the mode (BX contains desired mode)
+  mov ax, VBE_SET_MODE_CODE ; Set vbe mode function
+  or bx, 0x4000             ; Set bit 14 for linearframebuffer
   int 0x10
   cmp ax, VBE_ERROR_CODE
   jne vbe_error
@@ -184,6 +175,14 @@ vbe_error:
   jmp end
 
 VBE_ERROR_MSG db "VBE function error", 0
+VBE_MODE_LIST_MSG db "List of VBE modes:", 0
+VBE_SELECT_MODE_MSG db "Select a mode and press ENTER: ", 0
+VBE_INVALID_MODE_MSG db "Invalid mode!", 0
+
+VBE_MAX_MODES equ 100
+
+vbe_mode_count dw 0
+vbe_mode_list times(VBE_MAX_MODES) dw 0
 
 vbe_info_structure:
   .signature               db "VBE2"  ; Indicate VBE 2.0+

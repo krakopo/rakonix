@@ -32,9 +32,6 @@ void main()
 
   cpuid();
 
-  printf("pitch width height: %d %d %d\n", vbe_mode_info->pitch, vbe_mode_info->width, vbe_mode_info->height);
-  printf("framebuffer: 0x%x\n", vbe_mode_info->framebuffer);
-
   /* Divide by zero test */
   int e = 10 / 0;
 

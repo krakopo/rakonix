@@ -8,7 +8,7 @@
 
 [bits 16]
 
-BOOT1_SECTORS equ 12      ; Number of sectors needed to store this code on disk
+BOOT1_SECTORS equ 13      ; Number of sectors needed to store this code on disk
                           ; Would like stage 0 to pass this info but we need
                           ; the constant value for use with 'times' below.
                           ; What we probably need is logic to read sectors
@@ -23,10 +23,25 @@ mov bx, MSG_BOOT1         ; Print stage 1 starting message
 call print_string
 call print_newline
 
+; Ask user if they want to use VBE mode
+mov bx, MSG_ASK_USE_VBE
+call print_string
+call print_newline
+
+ask_use_vbe:
+call keyboard_wait_for_key_press
+cmp al, 'y'
+je use_vbe
+cmp al, 'n'
+je skip_vbe
+jmp ask_use_vbe
+
+use_vbe:
 call get_fonts            ; Call routine to copy fonts stored in the VGA BIOS
 call vesa_init            ; Enable graphics mode if available
 
-KERNEL_OFFSET equ 0x2000  ; This is where we are going to load the kernel
+skip_vbe:
+KERNEL_OFFSET equ 0x4000  ; This is where we are going to load the kernel
                           ; into memory. We will jmp here to transfer control
                           ; to the kernel.
 
@@ -39,6 +54,7 @@ jmp $                     ; Never get here
 %include "print.asm"      ; Print functions
 %include "disk.asm"       ; Disk read functions
 %include "vesa.asm"       ; VESA functions
+%include "keyboard.asm"   ; Keyboard functions
 
 load_kernel:
   pusha                   ; Save registers
@@ -112,6 +128,7 @@ BOOT_DRIVE       db 0
 MSG_BOOT1        db "Starting boot stage 1", 0
 MSG_PROTECT_MODE db "Successfully entered 32-bit Protected Mode", 0
 MSG_LOAD_KERNEL  db "Loading kernel in memory", 0
+MSG_ASK_USE_VBE  db "Use high resolution graphics mode? (y/n)", 0
 
 fonts times (256*16) db 0     ; Leave room for 256 fonts * 16 bytes each (4KB)
 

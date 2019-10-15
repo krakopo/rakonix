@@ -20,7 +20,7 @@ BOOT_ASM_SOURCE = $(wildcard boot/*.asm)
 BOOT1_START = 0x1000
 
 # Memory address where kernel execution starts
-KERNEL_START = 0x2000
+KERNEL_START = 0x4000
 
 all: os-image
 

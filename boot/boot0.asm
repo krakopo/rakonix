@@ -47,7 +47,7 @@ load_boot1:
   call print_newline
 
   mov bx, BOOT1_OFFSET   ; Read into BOOT1_OFFSET
-  mov al, 12             ; Number of sectors BOOT1_SIZE_CHECK_MARKER
+  mov al, 13             ; Number of sectors BOOT1_SIZE_CHECK_MARKER
   mov cl, 0x2            ; Starting the 2nd sector (ie after boot sector)
   mov dl, [BOOT_DRIVE]   ; From our boot drive
   call disk_read
