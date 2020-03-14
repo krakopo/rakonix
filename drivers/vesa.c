@@ -75,6 +75,14 @@ void vesa_print(char *str)
       xcursor = 0;
       ycursor += FONT_HEIGHT;
     }
+    else if (*p == '\b')
+    {
+        if (xcursor > 0) {
+            xcursor -= FONT_WIDTH;
+            drawchar(' ', -1, -1, -1, -1);
+            xcursor -= FONT_WIDTH;
+        }
+    }
     else
     {
       drawchar(*p, -1, -1, -1, -1);

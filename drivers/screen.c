@@ -116,8 +116,15 @@ static void print_char(char character, int col, int row)
   {
     int current_row = offset / (2*MAX_COLS);
     offset = get_screen_offset(MAX_COLS - 1, current_row);
+  } else if (character == '\b')
+  {
+    if (offset >= 2) {
+        offset -= 2;
+        vidmem[offset] = ' ';
+        vidmem[offset + 1] = attribute_byte;
+    }
   }
-  // If it's not a newline character just print it.
+  // If it's not a newline or backspace character just print it.
   else
   {
     vidmem[offset] = character;
@@ -126,7 +133,9 @@ static void print_char(char character, int col, int row)
 
   // Increment the offset by 2 (+1 for the attribute byte) for the
   // next character.
-  offset += 2;
+  if (character != '\b') {
+    offset += 2;
+  }
 
   // Account for any scrolling required (ie if we're moving past the last row).
   offset = handle_scrolling(offset);
