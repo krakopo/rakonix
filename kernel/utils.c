@@ -26,9 +26,14 @@ unsigned char *memcpy(unsigned char *dest, unsigned char *src, int num_bytes)
   return dest;
 }
 
-void sleep(unsigned int seconds)
+void sleep(int seconds)
 {
   timer_wait(seconds_to_ticks(seconds));
+}
+
+void usleep(int microseconds)
+{
+  timer_wait(microseconds_to_ticks(microseconds));
 }
 
 char *itoa(unsigned int i, char *str, int base)
@@ -280,4 +285,42 @@ void cpuid()
 
     printf("CPU Brand: %s\n", cpu_brand_str);
   }
+}
+
+int strcmp(const char *s1, const char *s2) {
+    const char *p1 = s1;
+    const char *p2 = s2;
+
+    if (*p1 == '\0') {
+        if (*p2 == '\0') {
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+
+    while (*p1 != '\0') {
+        if (*p2 == '\0' || *p1 > *p2) {
+            return 1;
+        } else if (*p1 < *p2) {
+            return -1;
+        }
+        p1++;
+        p2++;
+    }
+
+    if (*p2 == '\0') {
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
+unsigned int strlen(const char *s) {
+    unsigned int len = 0;
+    const char *p = s;
+    while (*p++ != '\0') {
+        len++;
+    }
+    return len;
 }
