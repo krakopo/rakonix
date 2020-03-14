@@ -7,6 +7,7 @@
 void idt_install();
 void keyboard_install();
 void timer_install();
+void run_shell();
 
 void main()
 {
@@ -30,6 +31,10 @@ void main()
   /* Enable interrupts using the STI (Set Interrupt Flag) instruction */
   __asm__ __volatile__ ("sti");
 
+  run_shell();
+
+#if 0
+  /* Print some information about the CPU */
   cpuid();
 
   /* Divide by zero test */
@@ -44,4 +49,10 @@ void main()
     printf("0x%x\n", t);
     t++;
   }
+#endif
+
+  /* Print exit banner */
+  set_text_colour(BLACK, RED);
+  printf("Kernel exiting. Bye!\n");
+  reset_text_colour();
 }
