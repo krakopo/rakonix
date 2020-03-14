@@ -45,3 +45,8 @@ unsigned int seconds_to_ticks(unsigned int seconds)
 {
   return seconds * TICK_HZ;
 }
+
+unsigned int microseconds_to_ticks(unsigned int microseconds)
+{
+  return (unsigned int) ((microseconds / 1000000.0) * TICK_HZ);
+}
