@@ -18,50 +18,49 @@
 #define NUM_KEYMAP_ENTRIES 128
 
 /* Scan code to key mapping. Indexed by scan code. */
-unsigned char keymap[NUM_KEYMAP_ENTRIES] = { 0 };
+int keymap[NUM_KEYMAP_ENTRIES] = { 0 };
+
+char keypress_buffer = '\0';
 
 /* Key map values for special keys */
-enum {
-  KEYBOARD_ERROR,
-  ESC_KEY,
-  CTRL_KEY,
-  LEFT_SHIFT_KEY,
-  RIGHT_SHIFT_KEY,
-  KEYPAD_ASTERISK_KEY,
-  ALT_KEY,
-  SPACEBAR_KEY,
-  CAPS_LOCK_KEY,
-  F1_KEY,
-  F2_KEY,
-  F3_KEY,
-  F4_KEY,
-  F5_KEY,
-  F6_KEY,
-  F7_KEY,
-  F8_KEY,
-  F9_KEY,
-  F10_KEY,
-  NUM_LOCK_KEY,
-  SCROLL_LOCK_KEY,
-  KEYPAD_7,
-  KEYPAD_8,
-  KEYPAD_9,
-  KEYPAD_MINUS,
-  KEYPAD_4,
-  KEYPAD_5,
-  KEYPAD_6,
-  KEYPAD_PLUS,
-  KEYPAD_1,
-  KEYPAD_2,
-  KEYPAD_3,
-  KEYPAD_0,
-  KEYPAD_DECIMAL,
-  ALT_SYS_RSQ_KEY,
-  FN_KEY,
-  SUPER_KEY,
-  F11_KEY,
-  F12_KEY
-};
+#define KEYBOARD_ERROR      0x1000
+#define ESC_KEY             0x1001
+#define CTRL_KEY            0x1002
+#define LEFT_SHIFT_KEY      0x1003
+#define RIGHT_SHIFT_KEY     0x1004
+#define KEYPAD_ASTERISK_KEY 0x1005
+#define ALT_KEY             0x1006
+#define CAPS_LOCK_KEY       0x1007
+#define F1_KEY              0x1008
+#define F2_KEY              0x1009
+#define F3_KEY              0x1010
+#define F4_KEY              0x1011
+#define F5_KEY              0x1012
+#define F6_KEY              0x1013
+#define F7_KEY              0x1014
+#define F8_KEY              0x1015
+#define F9_KEY              0x1016
+#define F10_KEY             0x1017
+#define NUM_LOCK_KEY        0x1018
+#define SCROLL_LOCK_KEY     0x1019
+#define KEYPAD_7            0x1020
+#define KEYPAD_8            0x1021
+#define KEYPAD_9            0x1022
+#define KEYPAD_MINUS        0x1023
+#define KEYPAD_4            0x1024
+#define KEYPAD_5            0x1025
+#define KEYPAD_6            0x1026
+#define KEYPAD_PLUS         0x1027
+#define KEYPAD_1            0x1028
+#define KEYPAD_2            0x1029
+#define KEYPAD_3            0x1030
+#define KEYPAD_0            0x1031
+#define KEYPAD_DECIMAL      0x1032
+#define ALT_SYS_RSQ_KEY     0x1033
+#define FN_KEY              0x1034
+#define SUPER_KEY           0x1035
+#define F11_KEY             0x1036
+#define F12_KEY             0x1037
 
 /* Flag to indicate of Caps Lock is on or not */
 int capslock_flag = 0;
@@ -80,7 +79,7 @@ static void keyboard_handler(struct isr_params *isrp)
   /* Handle key release */
   if (scancode & KEYBOARD_KEY_RELEASE)
   {
-    unsigned char key_pressed = keymap[scancode - KEYBOARD_KEY_RELEASE];
+    int key_pressed = keymap[scancode - KEYBOARD_KEY_RELEASE];
 
     switch(key_pressed)
     {
@@ -95,9 +94,7 @@ static void keyboard_handler(struct isr_params *isrp)
   {
     /* Holding a key down generates multiple key press interrupts */
 
-    unsigned char key_pressed = keymap[scancode];
-
-    printf("Scan code: 0x%x\n", scancode);
+    int key_pressed = keymap[scancode];
 
     switch(key_pressed)
     {
@@ -117,8 +114,16 @@ static void keyboard_handler(struct isr_params *isrp)
           {
             key_pressed -= 32;
           }
+          else if (shift_held_flag)
+          {
+            switch(key_pressed)
+            {
+              case '/': key_pressed = '?'; break;
+              /* TODO More to add here */
+            }
+          }
         }
-        printf("Key: %c\n", key_pressed);
+        keypress_buffer = key_pressed;
         break;
     }
   }
@@ -184,7 +189,7 @@ static void populate_keymap_US()
   keymap[0x36] = RIGHT_SHIFT_KEY;
   keymap[0x37] = KEYPAD_ASTERISK_KEY;
   keymap[0x38] = ALT_KEY;
-  keymap[0x39] = SPACEBAR_KEY;
+  keymap[0x39] = ' ';
   keymap[0x3A] = CAPS_LOCK_KEY;
   keymap[0x3B] = F1_KEY;
   keymap[0x3C] = F2_KEY;
@@ -225,4 +230,19 @@ void keyboard_install()
   populate_keymap_US();
 
   irq_install_custom_handler(KEYBOARD_IRQ_NUM, keyboard_handler);
+}
+
+/*
+ * Get next character from the keyboard
+ *
+ * Blocks
+ */
+char keyboard_read() {
+    /* TODO Don't want to poll like this, chews up a lot of CPU */
+    while (keypress_buffer == '\0') {
+        usleep(10 * 1000);
+    }
+    char c = keypress_buffer;
+    keypress_buffer = '\0';
+    return c;
 }
