@@ -9,7 +9,8 @@
 pop dword [fonts]
 pop dword [vbe_mode_info]
 call main
-jmp $
+cli
+hlt
 global vbe_mode_info
 vbe_mode_info dd 0
 global fonts
