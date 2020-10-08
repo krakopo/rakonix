@@ -240,7 +240,8 @@ void keyboard_install()
 char keyboard_read() {
     /* TODO Don't want to poll like this, chews up a lot of CPU */
     while (keypress_buffer == '\0') {
-        usleep(10 * 1000);
+        // Calling usleep here is leading to a double fault on AMD system
+        //usleep(10 * 1000);
     }
     char c = keypress_buffer;
     keypress_buffer = '\0';
