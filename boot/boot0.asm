@@ -63,6 +63,6 @@ MSG_LOAD_BOOT1 db "Loading boot stage 1 into memory", 0
 
 times 510-($-$$) db 0    ; Fill the next bytes up to 510 with zeros
 
-dw 0xaa55                ; Set bytes 511 ans 512 to the magic number that
+dw 0xaa55                ; Set bytes 511 and 512 to the magic number that
                          ; the BIOS uses to identify the boot sector.
 

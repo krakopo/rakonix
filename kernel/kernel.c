@@ -31,28 +31,39 @@ void main()
   /* Enable interrupts using the STI (Set Interrupt Flag) instruction */
   __asm__ __volatile__ ("sti");
 
-  run_shell();
-
-#if 0
   /* Print some information about the CPU */
   cpuid();
 
-  /* Divide by zero test */
-  int e = 10 / 0;
-
   /* Timer interrupt test */
-  int t = 0;
+  int t = 3;
 
-  while (1)
+  printf("Timer interrupt test:");
+  while (t)
   {
+    printf(" %d", t--);
     sleep(1);
-    printf("0x%x\n", t);
-    t++;
   }
-#endif
+  printf("\n");
+
+  // Search for RSDP
+  int i = 0;
+  for (i = 0x000E0000; i < 0x000FFFFF; i += 16)
+  {
+    const unsigned char *mem = (const unsigned char *) i;
+    if (memcmp(mem, (const unsigned char *) "RSD PTR ", 8) == 0) {
+      printf("Found RSDP at address 0x%x\n", i);
+      break;
+    }
+  }
+
+  run_shell();
 
   /* Print exit banner */
-  set_text_colour(BLACK, RED);
+  set_text_colour(BLACK, CYAN);
   printf("Kernel exiting. Bye!\n");
   reset_text_colour();
+
+  /* Divide by zero test */
+  int z = 0;
+  z = 10 / z;
 }

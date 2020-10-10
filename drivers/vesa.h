@@ -3,26 +3,6 @@
 
 #include "kernel/types.h"
 
-static int vesa_colour_codes[] =
-{
-  /* BLACK          */ 0x000000,
-  /* BLUE           */ 0x0000ff,
-  /* GREEN          */ 0x00ff00,
-  /* CYAN           */ 0x00ffff,
-  /* RED            */ 0xff0000,
-  /* MAGENTA        */ 0xff00ff,
-  /* BROWN          */ 0xa52a2a,
-  /* LIGHT_GRAY     */ 0xd3d3d3,
-  /* DARK_GRAY      */ 0xa9a9a9,
-  /* LIGHT_BLUE     */ 0xadd8e6,
-  /* LIGHT_GREEN    */ 0x90ee90,
-  /* LIGHT_CYAN     */ 0xe0ffff,
-  /* LIGHT_RED      */ 0xff9d9d,
-  /* LIGHT_MAGENTA  */ 0xff9dff,
-  /* YELLOW         */ 0xffff00,
-  /* WHITE          */ 0xffffff
-};
-
 struct vbe_mode_info_structure
 {
   uint16_t attributes;    // deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.

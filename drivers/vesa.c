@@ -6,6 +6,26 @@ int ycursor = 0;
 const int FONT_WIDTH = 8;
 const int FONT_HEIGHT = 16;
 
+static int vesa_colour_codes[] =
+{
+  /* BLACK          */ 0x000000,
+  /* BLUE           */ 0x0000ff,
+  /* GREEN          */ 0x00ff00,
+  /* CYAN           */ 0x00ffff,
+  /* RED            */ 0xff0000,
+  /* MAGENTA        */ 0xff00ff,
+  /* BROWN          */ 0xa52a2a,
+  /* LIGHT_GRAY     */ 0xd3d3d3,
+  /* DARK_GRAY      */ 0xa9a9a9,
+  /* LIGHT_BLUE     */ 0xadd8e6,
+  /* LIGHT_GREEN    */ 0x90ee90,
+  /* LIGHT_CYAN     */ 0xe0ffff,
+  /* LIGHT_RED      */ 0xff9d9d,
+  /* LIGHT_MAGENTA  */ 0xff9dff,
+  /* YELLOW         */ 0xffff00,
+  /* WHITE          */ 0xffffff
+};
+
 #define DEFAULT_FGCOLOUR 0xffffff // WHITE
 #define DEFAULT_BGCOLOUR 0x000000 // BLACK
 
@@ -108,13 +128,15 @@ void vesa_clear_screen()
   }
 }
 
+// Input colour codes are from BIOS (see drivers/screen.h)
 void vesa_set_text_colour(int bgcolour, int fgcolour)
 {
-  current_bgcolour = bgcolour;
-  current_fgcolour = fgcolour;
+  current_bgcolour = vesa_colour_codes[bgcolour];
+  current_fgcolour = vesa_colour_codes[fgcolour];
 }
 
 void vesa_reset_text_colour()
 {
-  vesa_set_text_colour(DEFAULT_BGCOLOUR, DEFAULT_FGCOLOUR);
+  current_bgcolour = DEFAULT_BGCOLOUR;
+  current_fgcolour = DEFAULT_FGCOLOUR;
 }

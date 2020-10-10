@@ -64,7 +64,7 @@ void idt_set_handler(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags)
  * Array of exception messages corresponding to interrupt number.
  * For example, interrupt 0 is a divide by zero exception.
  */
-unsigned char *exception_messages[] =
+char *exception_messages[] =
 {
   /*
    * TODO Investigate
@@ -112,7 +112,7 @@ void idt_default_handler(struct isr_params *isrp)
 {
   if (isrp->int_no < 32)
   {
-    set_text_colour(BLACK, LIGHT_RED);
+    set_text_colour(BLACK, RED);
     printf("Unhandled exception @ EIP = 0x%x: %s\n", isrp->eip, exception_messages[isrp->int_no]);
     for(;;);
   }

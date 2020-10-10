@@ -8,7 +8,7 @@
 
 #define MAX_COMMAND_LENGTH 64
 
-void *getcommand_keyboard(char *buffer, int buffsize) {
+void getcommand_keyboard(char *buffer, int buffsize) {
     int readcount = 0;
     while (readcount < (buffsize - 1)) {
         char c = keyboard_read();
@@ -35,7 +35,6 @@ void run_shell() {
     char command[MAX_COMMAND_LENGTH] = { '\0' };
     while (1) {
         printf("# ");
-        char c;
         getcommand_keyboard(command, MAX_COMMAND_LENGTH);
         if (strcmp(command, "exit") == 0) {
             break;

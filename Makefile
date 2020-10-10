@@ -25,7 +25,7 @@ KERNEL_START = 0x4000
 all: os-image
 
 run: os-image
-	qemu-system-i386 -drive format=raw,file=$<
+	qemu-system-x86_64 -drive format=raw,file=$<
 
 os-image: boot/boot0.bin boot/boot1.bin kernel/kernel.bin
 	sh load_sectors_check.sh
@@ -44,7 +44,7 @@ kernel/kernel.bin: kernel/kernel_entry.o ${OBJ_FILES}
 	ld -o $@ -Ttext ${KERNEL_START} --entry ${KERNEL_START} --oformat binary -m elf_i386 $^
 
 %.o: %.c ${C_HEADERS}
-	gcc -m32 -fno-pic -ffreestanding -c $< -o $@ -I .
+	gcc -Wall -Werror -Wfatal-errors -m32 -fno-pic -ffreestanding -c $< -o $@ -I .
 
 %.o: %.asm
 	nasm $< -f elf -o $@

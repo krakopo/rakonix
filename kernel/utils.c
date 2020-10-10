@@ -26,6 +26,24 @@ unsigned char *memcpy(unsigned char *dest, unsigned char *src, int num_bytes)
   return dest;
 }
 
+int memcmp(const unsigned char *s1, const unsigned char *s2, unsigned int n)
+{
+  int i = 0;
+  for (i = 0; i < n; i++)
+  {
+    if (*s1 == *s2)
+    {
+      s1++;
+      s2++;
+    }
+    else
+    {
+      return *s1 - *s2;
+    }
+  }
+  return 0;
+}
+
 void sleep(int seconds)
 {
   timer_wait(seconds_to_ticks(seconds));
@@ -108,7 +126,7 @@ void printf(const char *fmt, ...)
   __builtin_va_list list;
   __builtin_va_start(list, fmt);
   char str[256];
-  memset(str, '\0', 256);
+  memset((unsigned char *)str, '\0', 256);
   char *c = str;
   const char *f = fmt;
   while (*f != '\0')
@@ -171,7 +189,7 @@ void set_text_colour(int bgcolour, int fgcolour)
 {
   if (vesa_supported())
   {
-    vesa_set_text_colour(vesa_colour_codes[bgcolour], vesa_colour_codes[fgcolour]);
+    vesa_set_text_colour(bgcolour, fgcolour);
   }
   else
   {
@@ -234,7 +252,6 @@ void cpuid()
   __asm__ __volatile__ ("pushf; pop %0" : "=r" (eflags));
 
   /* Set the ID bit and update EFLAGS using POPF */
-  unsigned int old_eflags = eflags;
   eflags |= EFLAGS_ID_BIT;
   __asm__ __volatile__ ("push %0; popf" : : "r" (eflags));
 
