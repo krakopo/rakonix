@@ -25,7 +25,7 @@ KERNEL_START = 0x4000
 all: os-image
 
 run: os-image
-	qemu-system-x86_64 -drive format=raw,file=$<
+	qemu-system-x86_64 -smp cpus=2 -drive format=raw,file=$<
 
 os-image: boot/boot0.bin boot/boot1.bin kernel/kernel.bin
 	sh load_sectors_check.sh

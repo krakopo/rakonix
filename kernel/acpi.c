@@ -22,6 +22,12 @@ struct sdt_hdr {
   uint32_t creator_revision;
 } __attribute__ ((packed));
 
+struct apic_sdt {
+  struct sdt_hdr header;
+  uint32_t lapic_addr;
+  uint32_t flags;
+} __attribute__ ((packed));
+
 /* Returns a pointer to the RSDP */
 struct rsdp *find_rsdp()
 {
@@ -109,12 +115,30 @@ void init_acpi()
    */
   int num_sdt = (rsdt->length - sizeof(struct sdt_hdr)) / 4;
   printf("Number of SDT tables: %d\n", num_sdt);
-  uint32_t *ptrs_other_sdt = (uint32_t *)((void *)rsdt + sizeof(struct sdt_hdr));
+  uint32_t *ptrs_other_sdt = (uint32_t *)((uint8_t *)rsdt + sizeof(struct sdt_hdr));
+  struct apic_sdt *apic_sdt = 0;
   int i = 0;
   for (i = 0; i < num_sdt; i++) {
     struct sdt_hdr *sdt = (struct sdt_hdr *) *(ptrs_other_sdt + i);
     print_signature(sdt->signature, sizeof(sdt->signature));
+    if (memcmp((const unsigned char *) sdt->signature,
+               (const unsigned char *) "APIC", 4) == 0) {
+      apic_sdt = (struct apic_sdt *) sdt;
+    }
     printf(" ");
   }
   printf("\n");
+
+  /* Detect number of CPUs */
+  uint8_t *p = (uint8_t *)apic_sdt + sizeof(struct apic_sdt);
+  uint8_t *pmax = p + apic_sdt->header.length;
+  int num_cpus = 0;
+  for (; p < pmax; p += p[1]) {
+    //printf("%x: %d %d\n", p, p[0], p[1]);
+    int type = p[0];
+    switch(type) {
+      case 0: num_cpus++; break;
+    }
+  }
+  printf("Detected %d CPUs\n", num_cpus);
 }
