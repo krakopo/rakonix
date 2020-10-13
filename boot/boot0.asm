@@ -18,7 +18,15 @@
                          ; The assembler will in turn offset memory accesses
                          ; by this value for us.
 
-mov bp, 0x9000           ; Setup the stack
+; Setup the stack. The stack pointer value is a bit artibrary but needs to be
+; large enough so we don't corrupt the stack.
+;
+; One case in which this happend was when the kernel size grew to 41 sectors
+; and we read the kernel into memory starting at address 0x4000. So kernel
+; code ends up at up to memory location 0x9200 (= 0x4000 + 41*512).
+; This was a problem when we initially had the stack pointer at 0x9000 since
+; we ending up reading bytes from disk over part of the stack.
+mov bp, 0xF000
 mov sp, bp
 
 BOOT1_OFFSET equ 0x1000  ; Where we will load the 2nd stage of our boot loader

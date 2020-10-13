@@ -2,6 +2,7 @@
 #include "kernel/types.h"
 #include "drivers/screen.h"
 #include "drivers/vesa.h"
+#include "kernel/acpi.h"
 
 /* Forward declarations */
 void idt_install();
@@ -34,9 +35,11 @@ void main()
   /* Print some information about the CPU */
   cpuid();
 
+  /* Setup ACPI */
+  init_acpi();
+
   /* Timer interrupt test */
   int t = 3;
-
   printf("Timer interrupt test:");
   while (t)
   {
@@ -44,17 +47,6 @@ void main()
     sleep(1);
   }
   printf("\n");
-
-  // Search for RSDP
-  int i = 0;
-  for (i = 0x000E0000; i < 0x000FFFFF; i += 16)
-  {
-    const unsigned char *mem = (const unsigned char *) i;
-    if (memcmp(mem, (const unsigned char *) "RSD PTR ", 8) == 0) {
-      printf("Found RSDP at address 0x%x\n", i);
-      break;
-    }
-  }
 
   run_shell();
 
@@ -64,6 +56,7 @@ void main()
   reset_text_colour();
 
   /* Divide by zero test */
+  printf("Divison by zero interrupt test:");
   int z = 0;
   z = 10 / z;
 }

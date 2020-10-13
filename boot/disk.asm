@@ -15,6 +15,9 @@ disk_read:
   pusha
 
   push ax       ; Save number of sectors to read on stack
+                ; Note reading over the stack (thus corrupting the stack)
+                ; is possible if the stack pointer is too low.
+                ; TODO Add a check for this
 
   mov ah, 0x02  ; BIOS read sector function
   mov ch, 0x00  ; Cylinder 0
@@ -36,6 +39,7 @@ disk_read:
 disk_error:
   mov bx, DISK_ERROR_MSG
   call print_string
+  ; TODO Print value of ah (return value), dl and al
   jmp $
 
 DISK_ERROR_MSG: db "Disk read error!", 0

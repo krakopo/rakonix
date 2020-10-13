@@ -113,7 +113,7 @@ void idt_default_handler(struct isr_params *isrp)
   if (isrp->int_no < 32)
   {
     set_text_colour(BLACK, RED);
-    printf("Unhandled exception @ EIP = 0x%x: %s\n", isrp->eip, exception_messages[isrp->int_no]);
+    printf("\nUnhandled exception @ EIP = 0x%x: %s\n", isrp->eip, exception_messages[isrp->int_no]);
     for(;;);
   }
   else
