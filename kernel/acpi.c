@@ -27,8 +27,8 @@ struct apic_sdt {
   uint32_t lapic_addr;
   uint32_t flags;
   /*
-   * After this we'll have a variable sized area with additional fields
-   * up to header->length bytes.
+   * Here we will have a variable sized area with additional fields
+   * up to header.length bytes.
    */
 } __attribute__ ((packed));
 
