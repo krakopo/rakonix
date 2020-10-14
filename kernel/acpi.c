@@ -26,6 +26,10 @@ struct apic_sdt {
   struct sdt_hdr header;
   uint32_t lapic_addr;
   uint32_t flags;
+  /*
+   * After this we'll have a variable sized area with additional fields
+   * up to header->length bytes.
+   */
 } __attribute__ ((packed));
 
 /* Returns a pointer to the RSDP */
@@ -131,7 +135,7 @@ void init_acpi()
 
   /* Detect number of CPUs */
   uint8_t *p = (uint8_t *)apic_sdt + sizeof(struct apic_sdt);
-  uint8_t *pmax = p + apic_sdt->header.length;
+  uint8_t *pmax = (uint8_t *)apic_sdt + apic_sdt->header.length;
   int num_cpus = 0;
   for (; p < pmax; p += p[1]) {
     //printf("%x: %d %d\n", p, p[0], p[1]);
