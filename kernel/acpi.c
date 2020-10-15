@@ -1,6 +1,16 @@
 #include "types.h"
 #include "utils.h"
 
+/*
+ * Advanced Configuration and Power Interface (ACPI) module
+ * ACPI specifications available at https://www.uefi.org/acpi/specs
+ */
+
+/*
+ * This is a structure for the Root System Description Pointer (RSDP).
+ * The main reason for this is to be able to find the Root System
+ * Description Table (RSDT).
+ */
 struct rsdp
 {
   char signature[8];
@@ -10,7 +20,12 @@ struct rsdp
   uint32_t rsdt_addr;
 } __attribute__ ((packed));
 
-struct sdt_hdr {
+/*
+ * Other than the RSDT, regular System Description Tables (SDTs) use
+ * the following layout in memory for their header.
+ */
+struct sdt_hdr
+{
   char signature[4];
   uint32_t length;
   uint8_t revision;
@@ -20,9 +35,15 @@ struct sdt_hdr {
   uint32_t oem_revision;
   uint32_t creator_id;
   uint32_t creator_revision;
+  /* SDT specific data follows */
 } __attribute__ ((packed));
 
-struct apic_sdt {
+/*
+ * This is the memory layout for the Multiple APIC Description Table (MADT).
+ * Where APIC stands for Advanced Programmable Interrupt Controller.
+ */
+struct apic_sdt
+{
   struct sdt_hdr header;
   uint32_t lapic_addr;
   uint32_t flags;
@@ -39,7 +60,7 @@ struct rsdp *find_rsdp()
   for (i = 0x000E0000; i < 0x000FFFFF; i += 16)
   {
     const unsigned char *mem = (const unsigned char *) i;
-    if (memcmp(mem, (const unsigned char *) "RSD PTR ", 8) == 0) {
+    if (memcmp(mem, "RSD PTR ", 8) == 0) {
       //printf("Found RSDP at address 0x%x\n", i);
       return (struct rsdp *)i;
     }
@@ -95,24 +116,19 @@ void init_acpi()
     return;
   }
 
-  int rsdp_valid = validate_rsdp(rsdp);
-  if (!rsdp_valid) {
+  if (!validate_rsdp(rsdp)) {
     printf("Invalid RSDP detected\n");
     return;
   }
 
   struct sdt_hdr *rsdt = (struct sdt_hdr *) rsdp->rsdt_addr;
-  int rsdt_valid = validate_sdt(rsdt);
-  if (!rsdt_valid) {
+  if (!validate_sdt(rsdt)) {
     printf("Invalid RSDT detected\n");
     return;
-  } else {
-    print_signature(rsdt->signature, sizeof(rsdt->signature));
-    printf("\n");
   }
 
   /*
-   * The Root System Descriptor Table (RSDT) will contain 32-bit pointers
+   * The Root System Description Table (RSDT) will contain 32-bit pointers
    * to all the other SDT tables. The number of SDT tables pointed to
    * by the RSDT is the length in bytes of the RSDT (which includes the
    * header) divided by 4 (since each pointer to an SDT is 32 bits).
@@ -125,23 +141,28 @@ void init_acpi()
   for (i = 0; i < num_sdt; i++) {
     struct sdt_hdr *sdt = (struct sdt_hdr *) *(ptrs_other_sdt + i);
     print_signature(sdt->signature, sizeof(sdt->signature));
-    if (memcmp((const unsigned char *) sdt->signature,
-               (const unsigned char *) "APIC", 4) == 0) {
+    if (memcmp(sdt->signature, "APIC", 4) == 0) {
       apic_sdt = (struct apic_sdt *) sdt;
     }
     printf(" ");
   }
   printf("\n");
 
+  /* Validate APIC SDT before using it */
+  if (!validate_sdt(&apic_sdt->header)) {
+    printf("Invalid APIC SDT detected\n");
+    return;
+  }
+
   /* Detect number of CPUs */
   uint8_t *p = (uint8_t *)apic_sdt + sizeof(struct apic_sdt);
   uint8_t *pmax = (uint8_t *)apic_sdt + apic_sdt->header.length;
   int num_cpus = 0;
   for (; p < pmax; p += p[1]) {
-    //printf("%x: %d %d\n", p, p[0], p[1]);
     int type = p[0];
     switch(type) {
       case 0: num_cpus++; break;
+      /* TODO Handle more types here */
     }
   }
   printf("Detected %d CPUs\n", num_cpus);

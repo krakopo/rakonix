@@ -255,7 +255,7 @@ void idt_install()
   idtp.base = (uint32_t) idt;
 
   /* Clear out the IDT, initializing to zeros */
-  memset((unsigned char *) idt, 0, sizeof(struct idt_entry) * NUM_IDT_ENTRIES);
+  memset(idt, 0, sizeof(struct idt_entry) * NUM_IDT_ENTRIES);
 
   /* Remap interrupt numbers for our PICs */
   irq_remap();

@@ -2,43 +2,45 @@
 #include "drivers/vesa.h"
 #include "kernel/timer.h"
 
-unsigned char *memset(unsigned char *dest, unsigned char value, int num_bytes)
+unsigned char *memset(void *dest, unsigned char value, unsigned int num_bytes)
 {
   int i = 0;
 
   for (i = 0; i < num_bytes; i++)
   {
-    dest[i] = value;
+    *((unsigned char *) dest + i) = value;
   }
 
   return dest;
 }
 
-unsigned char *memcpy(unsigned char *dest, unsigned char *src, int num_bytes)
+unsigned char *memcpy(void *dest, const void *src, unsigned int num_bytes)
 {
   int i = 0;
 
   for (i = 0; i < num_bytes; i++)
   {
-    dest[i] = src[i];
+    *((unsigned char *) dest + i) = *((unsigned char *) src + i);
   }
 
   return dest;
 }
 
-int memcmp(const unsigned char *s1, const unsigned char *s2, unsigned int n)
+int memcmp(const void *s1, const void *s2, unsigned int num_bytes)
 {
+  const unsigned char *p1 = (const unsigned char *) s1;
+  const unsigned char *p2 = (const unsigned char *) s2;
   int i = 0;
-  for (i = 0; i < n; i++)
+  for (i = 0; i < num_bytes; i++)
   {
-    if (*s1 == *s2)
+    if (*p1 == *p2)
     {
-      s1++;
-      s2++;
+      p1++;
+      p2++;
     }
     else
     {
-      return *s1 - *s2;
+      return *p1 - *p2;
     }
   }
   return 0;
@@ -126,7 +128,7 @@ void printf(const char *fmt, ...)
   __builtin_va_list list;
   __builtin_va_start(list, fmt);
   char str[256];
-  memset((unsigned char *)str, '\0', 256);
+  memset(str, '\0', 256);
   char *c = str;
   const char *f = fmt;
   while (*f != '\0')
