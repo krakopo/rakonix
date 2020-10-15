@@ -335,11 +335,17 @@ int strcmp(const char *s1, const char *s2) {
     }
 }
 
-unsigned int strlen(const char *s) {
+unsigned int strlen(const char *s)
+{
     unsigned int len = 0;
     const char *p = s;
     while (*p++ != '\0') {
         len++;
     }
     return len;
+}
+
+void wait_interrupt()
+{
+  __asm__ __volatile__ ("hlt");
 }

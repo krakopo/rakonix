@@ -114,7 +114,8 @@ void idt_default_handler(struct isr_params *isrp)
   {
     set_text_colour(BLACK, RED);
     printf("\nUnhandled exception @ EIP = 0x%x: %s\n", isrp->eip, exception_messages[isrp->int_no]);
-    for(;;);
+    wait_interrupt(); /* Emits HLT instruction */
+    /* We're already in an interrupt handler so HLT wont return */
   }
   else
   {

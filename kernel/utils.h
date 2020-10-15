@@ -15,5 +15,5 @@ void cpuid();
 void set_text_colour(int bgcolour, int fgcolour);
 void reset_text_colour();
 void clear_screen();
-
+void wait_interrupt();
 #endif /* UTILS_H */
