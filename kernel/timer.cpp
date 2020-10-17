@@ -1,7 +1,7 @@
 /* Programmable Interval Timer (PIT) */
 
-#include "kernel/low_level.h"
-#include "kernel/idt.h"
+#include "kernel/low_level.hpp"
+#include "kernel/idt.hpp"
 
 /* Ticks per second */
 const unsigned int TICK_HZ = 100;

@@ -1,7 +1,7 @@
 #ifndef VESA_H
 #define VESA_H
 
-#include "kernel/types.h"
+#include "kernel/types.hpp"
 
 struct vbe_mode_info_structure
 {

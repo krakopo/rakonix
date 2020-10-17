@@ -3,8 +3,8 @@
  *
  */
 
-#include "utils.h"
-#include "drivers/keyboard.h"
+#include "utils.hpp"
+#include "drivers/keyboard.hpp"
 
 #define MAX_COMMAND_LENGTH 64
 

@@ -1,5 +1,5 @@
-#include "screen.h"
-#include "kernel/low_level.h"
+#include "screen.hpp"
+#include "kernel/low_level.hpp"
 
 /* Screen constants */
 #define VIDEO_ADDRESS 0xb8000

@@ -1,8 +1,8 @@
-#include "kernel/utils.h"
-#include "kernel/types.h"
-#include "drivers/screen.h"
-#include "drivers/vesa.h"
-#include "kernel/acpi.h"
+#include "kernel/utils.hpp"
+#include "kernel/types.hpp"
+#include "drivers/screen.hpp"
+#include "drivers/vesa.hpp"
+#include "kernel/acpi.hpp"
 
 /* Forward declarations */
 void idt_install();

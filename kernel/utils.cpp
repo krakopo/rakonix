@@ -1,6 +1,6 @@
-#include "drivers/screen.h"
-#include "drivers/vesa.h"
-#include "kernel/timer.h"
+#include "drivers/screen.hpp"
+#include "drivers/vesa.hpp"
+#include "kernel/timer.hpp"
 
 void *memset(void *dest, unsigned char value, unsigned int num_bytes)
 {

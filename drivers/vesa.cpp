@@ -1,4 +1,4 @@
-#include "vesa.h"
+#include "vesa.hpp"
 
 int xcursor = 0;
 int ycursor = 0;
@@ -135,7 +135,7 @@ void vesa_clear_screen()
   }
 }
 
-// Input colour codes are from BIOS (see drivers/screen.h)
+// Input colour codes are from BIOS (see drivers/screen.hpp)
 void vesa_set_text_colour(int bgcolour, int fgcolour)
 {
   current_bgcolour = vesa_colour_codes[bgcolour];

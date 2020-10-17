@@ -1,7 +1,7 @@
-#include "kernel/idt.h"
-#include "kernel/low_level.h"
-#include "kernel/utils.h"
-#include "drivers/screen.h"
+#include "kernel/idt.hpp"
+#include "kernel/low_level.hpp"
+#include "kernel/utils.hpp"
+#include "drivers/screen.hpp"
 
 /* Support up to the full 256 IDT entries */
 #define NUM_IDT_ENTRIES 256

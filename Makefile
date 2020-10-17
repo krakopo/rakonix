@@ -6,13 +6,13 @@
 # $< = first dependency
 # $@ = target
 
-C_SOURCE = $(wildcard kernel/*.c drivers/*.c)
-C_HEADERS = $(wildcard kernel/*.h drivers/*.h)
+CPP_SOURCE = $(wildcard kernel/*.cpp drivers/*.cpp)
+CPP_HEADERS = $(wildcard kernel/*.hpp drivers/*.hpp)
 
 ASM_SOURCE = $(wildcard kernel/*.asm)
 
-# Build list of object files from C source files by replacing .c with .o
-OBJ_FILES = ${C_SOURCE:.c=.o} ${ASM_SOURCE:.asm=.o}
+# Build list of object files from C++ source files by replacing .cpp with .o
+OBJ_FILES = ${CPP_SOURCE:.cpp=.o} ${ASM_SOURCE:.asm=.o}
 
 BOOT_ASM_SOURCE = $(wildcard boot/*.asm)
 
@@ -43,7 +43,7 @@ boot/boot1.bin: boot/boot1.o
 kernel/kernel.bin: kernel/kernel_entry.o ${OBJ_FILES}
 	ld -o $@ -Ttext ${KERNEL_START} --entry ${KERNEL_START} --oformat binary -m elf_i386 $^
 
-%.o: %.c ${C_HEADERS}
+%.o: %.cpp ${CPP_HEADERS}
 	g++ -Wall -Werror -Wfatal-errors -m32 -fno-pic -ffreestanding -c $< -o $@ -I .
 
 %.o: %.asm

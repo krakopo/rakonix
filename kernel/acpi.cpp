@@ -1,5 +1,5 @@
-#include "types.h"
-#include "utils.h"
+#include "types.hpp"
+#include "utils.hpp"
 
 /*
  * Advanced Configuration and Power Interface (ACPI) module

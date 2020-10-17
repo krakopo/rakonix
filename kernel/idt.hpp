@@ -1,7 +1,7 @@
 #ifndef IDT_H
 #define IDT_H
 
-#include "kernel/types.h"
+#include "kernel/types.hpp"
 
 /* This defines what the stack looks like after an ISR was running. */
 struct isr_params

@@ -1,6 +1,6 @@
-#include "kernel/low_level.h"
-#include "kernel/utils.h"
-#include "kernel/idt.h"
+#include "kernel/low_level.hpp"
+#include "kernel/utils.hpp"
+#include "kernel/idt.hpp"
 
 /* Keyboard data register - stores what keyboard wants to send */
 #define KEYBOARD_DATA_REG 0x60
