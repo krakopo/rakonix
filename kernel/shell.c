@@ -18,23 +18,24 @@ void getcommand_keyboard(char *buffer, int buffsize) {
             if (c == '\b') {
                 if (readcount > 0) {
                     readcount--;
-                    printf("%c", c);
+                    printf("\b%c_", c);
                 }
             } else {
                 *(buffer + readcount) = c;
                 readcount++;
-                printf("%c", c);
+                printf("\b%c_", c);
             }
         }
     }
-    printf("\n");
+    printf("\b\n");
     *(buffer + readcount) = '\0';
 }
 
 void run_shell() {
+    printf("\nStarting kernel shell\n");
     char command[MAX_COMMAND_LENGTH] = { '\0' };
     while (1) {
-        printf("# ");
+        printf("> _");
         getcommand_keyboard(command, MAX_COMMAND_LENGTH);
         if (strcmp(command, "exit") == 0) {
             break;

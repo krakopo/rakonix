@@ -41,6 +41,13 @@ call get_fonts            ; Call routine to copy fonts stored in the VGA BIOS
 call vesa_init            ; Enable graphics mode if available
 
 skip_vbe:
+
+; Disable cursor. The kernel will handle drawing the cursor so it works the
+; same in both VGA and VBE modes.
+mov ah, 0x01
+mov ch, 0x3f
+int 0x10
+
 KERNEL_OFFSET equ 0x4000  ; This is where we are going to load the kernel
                           ; into memory. We will jmp here to transfer control
                           ; to the kernel.

@@ -6,6 +6,7 @@ int ycursor = 0;
 const int FONT_WIDTH = 8;
 const int FONT_HEIGHT = 16;
 
+/* Colour codes are coded as 0xRRGGBB */
 static int vesa_colour_codes[] =
 {
   /* BLACK          */ 0x000000,
@@ -36,8 +37,14 @@ void putpixel(int x, int y, int colour)
 {
   unsigned char *screen = (unsigned char *) vbe_mode_info->framebuffer;
   unsigned int where = y * vbe_mode_info->pitch + x * 4;
+
+  /* Draw blue component */
   screen[where] = colour & 0xff;
+
+  /* Draw green component */
   screen[where + 1] = (colour >> 8) & 0xff;
+
+  /* Draw red component */
   screen[where + 2] = (colour >> 16) & 0xff;
 }
 

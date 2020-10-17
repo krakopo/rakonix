@@ -17,7 +17,7 @@ void main()
 
   /* Print welcome banner */
   set_text_colour(BLACK, YELLOW);
-  printf("Welcome to RakoNIX!\n");
+  printf("Welcome to RakoNIX!\n\n");
   reset_text_colour();
 
   /* Setup IDT and install default interrupt handlers */
@@ -38,6 +38,14 @@ void main()
   /* Setup ACPI */
   init_acpi();
 
+  /* Run kernel shell */
+  run_shell();
+
+  /* Print exit banner */
+  set_text_colour(BLACK, CYAN);
+  printf("Kernel exiting. Bye!\n");
+  reset_text_colour();
+
   /* Timer interrupt test */
   int t = 3;
   printf("Timer interrupt test:");
@@ -47,13 +55,6 @@ void main()
     sleep(1);
   }
   printf("\n");
-
-  run_shell();
-
-  /* Print exit banner */
-  set_text_colour(BLACK, CYAN);
-  printf("Kernel exiting. Bye!\n");
-  reset_text_colour();
 
   /* Divide by zero test */
   printf("Divison by zero interrupt test:");
