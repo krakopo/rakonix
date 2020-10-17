@@ -1,8 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-unsigned char *memset(void *dest, unsigned char value, unsigned int num_bytes);
-unsigned char *memcpy(void *dest, const void *src, unsigned int num_bytes);
+void *memset(void *dest, unsigned char value, unsigned int num_bytes);
+void *memcpy(void *dest, const void *src, unsigned int num_bytes);
 int memcmp(const void *s1, const void *s2, unsigned int num_bytes);
 void sleep(unsigned int seconds);
 void usleep(unsigned int microseconds);
