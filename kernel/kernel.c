@@ -43,7 +43,7 @@ void main()
 
   /* Print exit banner */
   set_text_colour(BLACK, CYAN);
-  printf("Kernel exiting. Bye!\n");
+  printf("\nKernel exiting. Bye!\n");
   reset_text_colour();
 
   /* Timer interrupt test */
