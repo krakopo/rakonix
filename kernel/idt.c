@@ -64,7 +64,7 @@ void idt_set_handler(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags)
  * Array of exception messages corresponding to interrupt number.
  * For example, interrupt 0 is a divide by zero exception.
  */
-char *exception_messages[] =
+const char *exception_messages[] =
 {
   /*
    * TODO Investigate
@@ -124,13 +124,14 @@ void idt_default_handler(struct isr_params *isrp)
 }
 
 /*
- * This array is actually an array of function pointers.
+ * This is an array of function pointers.
  * We use this to handle custom IRQ handlers for a given IRQ.
  */
-void *irq_custom_handlers[16] = { 0 };
+typedef void (* irq_handler_t)(struct isr_params *);
+irq_handler_t irq_custom_handlers[16] = { 0 };
 
 /* Install customer IRQ handler */
-void irq_install_custom_handler(int irq_num, void (*handler)(struct isr_params *p))
+void irq_install_custom_handler(int irq_num, irq_handler_t handler)
 {
   irq_custom_handlers[irq_num] = handler;
 }
@@ -149,11 +150,8 @@ void irq_install_custom_handler(int irq_num, void (*handler)(struct isr_params *
  */
 void irq_handler(struct isr_params *isrp)
 {
-  /* Function pointer */
-  void (*handler)(struct isr_params *p);
-
   /* If we have a custom handler for this IRQ, run it */
-  handler = irq_custom_handlers[isrp->int_no - 32];
+  irq_handler_t handler = irq_custom_handlers[isrp->int_no - 32];
   if (handler)
   {
     handler(isrp);
