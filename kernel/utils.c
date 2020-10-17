@@ -4,7 +4,7 @@
 
 void *memset(void *dest, unsigned char value, unsigned int num_bytes)
 {
-  int i = 0;
+  unsigned int i = 0;
 
   for (i = 0; i < num_bytes; i++)
   {

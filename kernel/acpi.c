@@ -80,7 +80,7 @@ int validate_rsdp(struct rsdp *rsdp)
 
   /* Last byte of the sum of all bytes in RSDP should be zero */
   uint8_t total_bytes = 0;
-  int i = 0;
+  unsigned int i = 0;
   for (i = 0; i < sizeof(struct rsdp); i++) {
     total_bytes += *(((uint8_t *) rsdp) + i);
   }
@@ -92,7 +92,7 @@ int validate_sdt(struct sdt_hdr *sdt)
 {
   /* 8-bit checksum, all bytes summed should be zero */
   uint8_t total_bytes = 0;
-  int i = 0;
+  unsigned int i = 0;
   for (i = 0; i < sdt->length; i++) {
     total_bytes += *(((uint8_t *) sdt) + i);
   }
