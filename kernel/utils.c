@@ -2,9 +2,9 @@
 #include "drivers/vesa.h"
 #include "kernel/timer.h"
 
-unsigned char *memset(void *dest, unsigned char value, unsigned int num_bytes)
+void *memset(void *dest, unsigned char value, unsigned int num_bytes)
 {
-  int i = 0;
+  unsigned int i = 0;
 
   for (i = 0; i < num_bytes; i++)
   {
@@ -14,9 +14,9 @@ unsigned char *memset(void *dest, unsigned char value, unsigned int num_bytes)
   return dest;
 }
 
-unsigned char *memcpy(void *dest, const void *src, unsigned int num_bytes)
+void *memcpy(void *dest, const void *src, unsigned int num_bytes)
 {
-  int i = 0;
+  unsigned int i = 0;
 
   for (i = 0; i < num_bytes; i++)
   {
@@ -30,7 +30,7 @@ int memcmp(const void *s1, const void *s2, unsigned int num_bytes)
 {
   const unsigned char *p1 = (const unsigned char *) s1;
   const unsigned char *p2 = (const unsigned char *) s2;
-  int i = 0;
+  unsigned int i = 0;
   for (i = 0; i < num_bytes; i++)
   {
     if (*p1 == *p2)
@@ -46,12 +46,12 @@ int memcmp(const void *s1, const void *s2, unsigned int num_bytes)
   return 0;
 }
 
-void sleep(int seconds)
+void sleep(unsigned int seconds)
 {
   timer_wait(seconds_to_ticks(seconds));
 }
 
-void usleep(int microseconds)
+void usleep(unsigned int microseconds)
 {
   timer_wait(microseconds_to_ticks(microseconds));
 }

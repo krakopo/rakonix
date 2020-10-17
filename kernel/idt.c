@@ -41,7 +41,7 @@ struct idt_entry idt[NUM_IDT_ENTRIES];
 struct idt_ptr idtp;
 
 /* The assembly routine to call LIDT */
-extern void idt_load();
+extern "C" void idt_load();
 
 /*
  * We use this function to populate entries in our IDT.
@@ -64,7 +64,7 @@ void idt_set_handler(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags)
  * Array of exception messages corresponding to interrupt number.
  * For example, interrupt 0 is a divide by zero exception.
  */
-char *exception_messages[] =
+const char *exception_messages[] =
 {
   /*
    * TODO Investigate
@@ -108,7 +108,7 @@ char *exception_messages[] =
 };
 
 /* The default C-language entry point for ISRs */
-void idt_default_handler(struct isr_params *isrp)
+extern "C" void idt_default_handler(struct isr_params *isrp)
 {
   if (isrp->int_no < 32)
   {
@@ -124,13 +124,14 @@ void idt_default_handler(struct isr_params *isrp)
 }
 
 /*
- * This array is actually an array of function pointers.
+ * This is an array of function pointers.
  * We use this to handle custom IRQ handlers for a given IRQ.
  */
-void *irq_custom_handlers[16] = { 0 };
+typedef void (* irq_handler_t)(struct isr_params *);
+irq_handler_t irq_custom_handlers[16] = { 0 };
 
 /* Install customer IRQ handler */
-void irq_install_custom_handler(int irq_num, void (*handler)(struct isr_params *p))
+void irq_install_custom_handler(int irq_num, irq_handler_t handler)
 {
   irq_custom_handlers[irq_num] = handler;
 }
@@ -147,13 +148,10 @@ void irq_install_custom_handler(int irq_num, void (*handler)(struct isr_params *
  * an EOI command to the first controller. If you don't send
  * an EOI, you won't raise any more IRQs.
  */
-void irq_handler(struct isr_params *isrp)
+extern "C" void irq_handler(struct isr_params *isrp)
 {
-  /* Function pointer */
-  void (*handler)(struct isr_params *p);
-
   /* If we have a custom handler for this IRQ, run it */
-  handler = irq_custom_handlers[isrp->int_no - 32];
+  irq_handler_t handler = irq_custom_handlers[isrp->int_no - 32];
   if (handler)
   {
     handler(isrp);
@@ -174,56 +172,56 @@ void irq_handler(struct isr_params *isrp)
 }
 
 /* All our assembly ISR entry points */
-extern void isr0();
-extern void isr1();
-extern void isr2();
-extern void isr3();
-extern void isr4();
-extern void isr5();
-extern void isr6();
-extern void isr7();
-extern void isr8();
-extern void isr9();
-extern void isr10();
-extern void isr11();
-extern void isr12();
-extern void isr13();
-extern void isr14();
-extern void isr15();
-extern void isr16();
-extern void isr17();
-extern void isr18();
-extern void isr19();
-extern void isr20();
-extern void isr21();
-extern void isr22();
-extern void isr23();
-extern void isr24();
-extern void isr25();
-extern void isr26();
-extern void isr27();
-extern void isr28();
-extern void isr29();
-extern void isr30();
-extern void isr31();
+extern "C" void isr0();
+extern "C" void isr1();
+extern "C" void isr2();
+extern "C" void isr3();
+extern "C" void isr4();
+extern "C" void isr5();
+extern "C" void isr6();
+extern "C" void isr7();
+extern "C" void isr8();
+extern "C" void isr9();
+extern "C" void isr10();
+extern "C" void isr11();
+extern "C" void isr12();
+extern "C" void isr13();
+extern "C" void isr14();
+extern "C" void isr15();
+extern "C" void isr16();
+extern "C" void isr17();
+extern "C" void isr18();
+extern "C" void isr19();
+extern "C" void isr20();
+extern "C" void isr21();
+extern "C" void isr22();
+extern "C" void isr23();
+extern "C" void isr24();
+extern "C" void isr25();
+extern "C" void isr26();
+extern "C" void isr27();
+extern "C" void isr28();
+extern "C" void isr29();
+extern "C" void isr30();
+extern "C" void isr31();
 
 /* All our assembly IRQ entry points */
-extern void irq0();
-extern void irq1();
-extern void irq2();
-extern void irq3();
-extern void irq4();
-extern void irq5();
-extern void irq6();
-extern void irq7();
-extern void irq8();
-extern void irq9();
-extern void irq10();
-extern void irq11();
-extern void irq12();
-extern void irq13();
-extern void irq14();
-extern void irq15();
+extern "C" void irq0();
+extern "C" void irq1();
+extern "C" void irq2();
+extern "C" void irq3();
+extern "C" void irq4();
+extern "C" void irq5();
+extern "C" void irq6();
+extern "C" void irq7();
+extern "C" void irq8();
+extern "C" void irq9();
+extern "C" void irq10();
+extern "C" void irq11();
+extern "C" void irq12();
+extern "C" void irq13();
+extern "C" void irq14();
+extern "C" void irq15();
 
 /*
  * Normally, IRQs 0 to 7 are mapped to entries 8 to 15.
