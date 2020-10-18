@@ -16,9 +16,7 @@ void main()
   clear_screen();
 
   /* Print welcome banner */
-  set_text_colour(BLACK, YELLOW);
-  printf("Welcome to RakoNIX!\n\n");
-  reset_text_colour();
+  printf_colour(BLACK, YELLOW, "Welcome to RakoNIX!\n\n");
 
   /* Setup IDT and install default interrupt handlers */
   idt_install();
@@ -42,9 +40,7 @@ void main()
   run_shell();
 
   /* Print exit banner */
-  set_text_colour(BLACK, CYAN);
-  printf("\nKernel exiting. Bye!\n");
-  reset_text_colour();
+  printf_colour(BLACK, CYAN, "\nKernel exiting. Bye!\n");
 
   /* Timer interrupt test */
   int t = 3;

@@ -7,13 +7,12 @@ int memcmp(const void *s1, const void *s2, unsigned int num_bytes);
 void sleep(unsigned int seconds);
 void usleep(unsigned int microseconds);
 void printf(const char *fmt, ...);
+void printf_colour(int bgcolour, int fgcolour, const char *fmt, ...);
 char *strcpy(char *to, const char *from);
 int strcmp(const char *s1, const char *s2);
 unsigned int strlen(const char *s);
 char *itoa(int i, char *str, int base);
 void cpuid();
-void set_text_colour(int bgcolour, int fgcolour);
-void reset_text_colour();
 void clear_screen();
 void wait_interrupt();
 #endif /* UTILS_H */

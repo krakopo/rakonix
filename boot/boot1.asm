@@ -78,7 +78,7 @@ load_kernel:
   ; this in mind. If our kernel code ever exceeds this we need to change
   ; it to read more sectors otherwise we wont load the kernel fully.
 
-  mov al, 33                ; Number of sectors KERNEL_SIZE_CHECK_MARKER
+  mov al, 41                ; Number of sectors KERNEL_SIZE_CHECK_MARKER
   mov dl, [BOOT_DRIVE]      ; From our boot drive
   mov cl, BOOT1_SECTORS + 2 ; Start from sector after boot loaders
   call disk_read
