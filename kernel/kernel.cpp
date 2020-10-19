@@ -3,6 +3,7 @@
 #include "drivers/screen.hpp"
 #include "drivers/vesa.hpp"
 #include "kernel/acpi.hpp"
+#include "kernel/kernel.hpp"
 
 /* Forward declarations */
 void idt_install();
@@ -11,6 +12,13 @@ void timer_install();
 void run_shell();
 
 void main()
+{
+  Kernel k;
+  theKernel = &k;
+  k.openShell();
+}
+
+Kernel::Kernel()
 {
   /* Clear the screen */
   clear_screen();
@@ -37,10 +45,10 @@ void main()
 
   /* Setup ACPI */
   init_acpi();
+}
 
-  /* Run kernel shell */
-  run_shell();
-
+Kernel::~Kernel()
+{
   /* Print exit banner */
   set_text_colour(BLACK, CYAN);
   printf("\nKernel exiting. Bye!\n");
@@ -60,4 +68,9 @@ void main()
   printf("Divison by zero interrupt test:");
   int z = 0;
   z = 10 / z;
+}
+
+void Kernel::openShell()
+{
+  run_shell();
 }
