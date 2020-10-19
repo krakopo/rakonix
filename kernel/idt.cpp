@@ -112,8 +112,10 @@ extern "C" void idt_default_handler(struct isr_params *isrp)
 {
   if (isrp->int_no < 32)
   {
-    set_text_colour(BLACK, RED);
-    printf("\nUnhandled exception @ EIP = 0x%x: %s\n", isrp->eip, exception_messages[isrp->int_no]);
+    printf_colour(
+      BLACK, RED, "\nUnhandled exception @ EIP = 0x%x: %s\n",
+      isrp->eip, exception_messages[isrp->int_no]);
+
     wait_interrupt(); /* Emits HLT instruction */
     /* We're already in an interrupt handler so HLT wont return */
   }

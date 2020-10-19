@@ -123,10 +123,8 @@ char *strcpy(char *to, const char *from)
   return to;
 }
 
-void printf(const char *fmt, ...)
+void vprintf(const char *fmt, __builtin_va_list list)
 {
-  __builtin_va_list list;
-  __builtin_va_start(list, fmt);
   char str[256];
   memset(str, '\0', 256);
   char *c = str;
@@ -175,7 +173,6 @@ void printf(const char *fmt, ...)
     }
   }
   *c = '\0';
-  __builtin_va_end(list);
 
   if (vesa_supported())
   {
@@ -185,6 +182,14 @@ void printf(const char *fmt, ...)
   {
     screen_print(str);
   }
+}
+
+void printf(const char *fmt, ...)
+{
+  __builtin_va_list list;
+  __builtin_va_start(list, fmt);
+  vprintf(fmt, list);
+  __builtin_va_end(list);
 }
 
 void set_text_colour(int bgcolour, int fgcolour)
@@ -348,4 +353,14 @@ unsigned int strlen(const char *s)
 void wait_interrupt()
 {
   __asm__ __volatile__ ("hlt");
+}
+
+void printf_colour(int bgcolour, int fgcolour, const char *fmt, ...)
+{
+  __builtin_va_list list;
+  __builtin_va_start(list, fmt);
+  set_text_colour(bgcolour, fgcolour);
+  vprintf(fmt, list);
+  reset_text_colour();
+  __builtin_va_end(list);
 }
