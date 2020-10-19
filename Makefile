@@ -44,7 +44,7 @@ kernel/kernel.bin: kernel/kernel_entry.o ${OBJ_FILES}
 	ld -o $@ -Ttext ${KERNEL_START} --entry ${KERNEL_START} --oformat binary -m elf_i386 $^
 
 %.o: %.cpp ${CPP_HEADERS}
-	g++ -Wall -Werror -Wfatal-errors -m32 -fno-pic -ffreestanding -c $< -o $@ -I .
+	g++ -Wall -Werror -Wfatal-errors -m32 -fno-pic -fno-rtti -fno-exceptions -ffreestanding -c $< -o $@ -I .
 
 %.o: %.asm
 	nasm $< -f elf -o $@
