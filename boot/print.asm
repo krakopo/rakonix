@@ -1,5 +1,13 @@
 [bits 16]
 
+; Print the character in al
+print_char:
+pusha
+mov ah, 0x0e
+int 0x10
+popa
+ret
+
 ; Print the string at the address stored in bx
 ;
 ; We do this by repeatedly calling a BIOS routine that prints a
@@ -9,13 +17,13 @@
 print_string:
   pusha
   mov ah, 0x0e
-print_char:
+print_next_char:
   mov al, [bx]
   cmp al, 0
   je print_string_finished
   int 0x10
   add bx, 1
-  jmp print_char
+  jmp print_next_char
 print_string_finished:
   popa
   ret
@@ -54,8 +62,8 @@ print_hex:
 
   ; First print the hex number prefix
   mov dx, bx
-  mov bx, HEX_PRE
-  call print_string
+  ;mov bx, HEX_PRE
+  ;call print_string
 
   ; Print each of the 4 hex digits (16 bit number)
 
@@ -189,6 +197,14 @@ print:
 ;  int 0x10
 ;  popa
 ;  ret
+
+; Print a space
+print_space:
+  pusha
+  mov al, ' '
+  call print_char
+  popa
+  ret
 
 ; Move cursor to the start of the next line
 ;
