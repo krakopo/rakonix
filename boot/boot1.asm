@@ -48,6 +48,12 @@ mov ah, 0x01
 mov ch, 0x3f
 int 0x10
 
+; Detect memory regions
+memory_regions equ 0xA000
+mov di, memory_regions
+mov ax, num_memory_regions
+call detect_memory
+
 KERNEL_OFFSET equ 0x4000  ; This is where we are going to load the kernel
                           ; into memory. We will jmp here to transfer control
                           ; to the kernel.
@@ -116,6 +122,7 @@ get_fonts:
 
 %include "gdt.asm"            ; Defines our GDT
 %include "protected_mode.asm" ; Code to enter protected mode
+%include "memory.asm"         ; Code to detect memory
 
 [bits 32]                     ; Protected mode code below here: 32-bits
 
@@ -125,6 +132,8 @@ BEGIN_PM:
 
   push vbe_mode_structure     ; Pass VBE mode information to the kernel
   push fonts                  ; Pass fonts to kernel
+  push memory_regions         ; Pass memory regions to kernel
+  push num_memory_regions     ; Pass number of memory regions to kernel
   jmp KERNEL_OFFSET           ; Run the kernel!
 
   jmp $                       ; Should never get here
@@ -138,6 +147,7 @@ MSG_LOAD_KERNEL  db "Loading kernel in memory", 0
 MSG_ASK_USE_VBE  db "Use high resolution graphics mode? (y/n)", 0
 
 fonts times (256*16) db 0     ; Leave room for 256 fonts * 16 bytes each (4KB)
+num_memory_regions db 0
 
 ; Need multiple of sector size so we know where to load the kernel from.
 ; This wastes some space but keeping things on sector boundaries simplifies

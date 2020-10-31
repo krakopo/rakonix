@@ -10,6 +10,9 @@ void keyboard_install();
 void timer_install();
 void run_shell();
 
+extern unsigned int *memory_regions;
+extern int *num_memory_regions;
+
 void main()
 {
   /* Clear the screen */
@@ -32,6 +35,10 @@ void main()
 
   /* Print some information about the CPU */
   cpuid();
+
+  /* Print memory information */
+  printf("Location of memory region info: %x\n", memory_regions);
+  printf("Number of memory regions detected: %d\n", *num_memory_regions);
 
   /* Setup ACPI */
   init_acpi();
