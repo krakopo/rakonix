@@ -3,7 +3,7 @@
 ; Detect available memory using BIOS function 0xE820 with INT 0x15.
 ; See memory detect example for details on how this works.
 ;
-;  Input: DI set to buffer address to store memory map
+; Input:  DI set to buffer address to store memory map
 ;         AX set to addres to store number of memory map entries
 ;
 ; Output: Return number of memory map entries in address stored in AX
