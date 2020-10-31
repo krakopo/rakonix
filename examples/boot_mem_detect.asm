@@ -40,14 +40,16 @@ jc end        ; BIOS call failed if carry set ...
 cmp eax, edx  ; ... or if EAX not equal to 0x534D4150
 jne end
 
+print_memory_region:
+
 ; Check the size of the buffer is 20 bytes. It might be 24 in some cases but
 ; apparently this is rare so we only handle the 20 byte case for now.
 cmp cl, 20
 jne end
 
-print_memory_region:
 ; Save value of EBX on stack for next call
 push ebx
+
 ; Base addr of memory region
 ; Little endian: most significant byte in highest address
 ; So start printing (16-bit) values from high to low addresses
