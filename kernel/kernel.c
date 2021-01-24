@@ -14,11 +14,11 @@ extern void *memory_regions;
 extern int *num_memory_regions;
 
 struct memory_region {
-	uint32_t base_addr_low;
-	uint32_t base_addr_high;
-	uint32_t length_low;
-	uint32_t length_high;
-	uint32_t type;
+  uint32_t base_addr_low;
+  uint32_t base_addr_high;
+  uint32_t length_low;
+  uint32_t length_high;
+  uint32_t type;
 } __attribute__((packed));
 
 #define MEMORY_REGION_FREE 1
@@ -47,29 +47,29 @@ void main()
   cpuid();
 
   /* Print memory information */
-	int i;
-	struct memory_region *m;
-	struct memory_region *kheap = NULL;
-	for (i = 0; i < *num_memory_regions; i++) {
-		m = (struct memory_region *) (memory_regions + sizeof(struct memory_region) * i);
+  int i;
+  struct memory_region *m;
+  struct memory_region *kheap = NULL;
+  for (i = 0; i < *num_memory_regions; i++) {
+    m = (struct memory_region *) (memory_regions + sizeof(struct memory_region) * i);
 
-		/* Skip non-free regions */
-		if (m->type != MEMORY_REGION_FREE) {
-			continue;
-		}
+    /* Skip non-free regions */
+    if (m->type != MEMORY_REGION_FREE) {
+      continue;
+    }
 
-		/* Skip base addr of zero */
-		if (m->base_addr_high + m->base_addr_low == 0) {
-			continue;
-		}
+    /* Skip base addr of zero */
+    if (m->base_addr_high + m->base_addr_low == 0) {
+      continue;
+    }
 
-		/* TODO Assert m->base_addr_high and m->length_high are zero */
-		kheap = m;
-	}
+    /* TODO Assert m->base_addr_high and m->length_high are zero */
+    kheap = m;
+  }
 
-	if (kheap != NULL) {
-		printf("Heap memory at address 0x%x size %d bytes\n", kheap->base_addr_low, kheap->length_low);
-	}
+  if (kheap != NULL) {
+    printf("Heap memory at address 0x%x size %d bytes\n", kheap->base_addr_low, kheap->length_low);
+  }
 
   /* Setup ACPI */
   init_acpi();

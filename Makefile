@@ -23,12 +23,12 @@ BOOT1_START = 0x1000
 KERNEL_START = 0x4000
 
 VM_CPUS = 2
-VM_MEMORY = 128
+VM_MEM_MB = 32
 
 all: os-image
 
 run: os-image
-	qemu-system-x86_64 -smp cpus=${VM_CPUS} -m ${VM_MEMORY} -drive format=raw,file=$<
+	qemu-system-x86_64 -smp cpus=${VM_CPUS} -m ${VM_MEM_MB} -drive format=raw,file=$<
 
 os-image: boot/boot0.bin boot/boot1.bin kernel/kernel.bin
 	sh load_sectors_check.sh
