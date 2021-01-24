@@ -24,6 +24,8 @@ cmp eax, edx           ; ... or if EAX not equal to 0x534D4150
 jne detect_memory_fail
 
 next_memory_region:
+; CX contains length of memory region, add to DI in case we make another call
+add di, cx
 ; Found a memory region, increment return value
 pop eax
 mov ecx, [eax]
@@ -36,7 +38,7 @@ cmp ebx, 0
 je detect_memory_end
 
 ; Prepare for next call
-add di, cx
+; DI incremented by length in CX above
 mov eax, 0xE820
 mov ecx, 24
 int 0x15
